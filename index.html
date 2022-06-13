@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -9,14 +9,29 @@
 <body>
     <h1>Vanilla JavaScript Todo App</h1>
     <script type="text/javascript" src="app.js"></script>
-    <div>
-        <nav>
-            <ul>
-              <li><a href="tasks.html">tasks</a></li>
-              <li><a href="kanban.html">kaban</a></li>
-            </ul>
-          </nav>
-
+    <div> 
+        <button id="task">tasks</button>
+        <button id="kaban">kaban</button>
     </div>
+
+    <script> 
+    
+    const kaban = document.getElementById('kaban');
+const task = document.getElementById('task'); 
+
+kaban.addEventListener('click', e => {
+    history.pushState({
+        page: 'Kaban'
+    }, 'Kaban', '/kaban');
+});
+
+task.addEventListener('click', e => {
+    history.pushState({
+        page:'Task'
+    }, 'Tasks', '/tasks'); 
+});
+
+
+    </script>
 </body>
 </html>
