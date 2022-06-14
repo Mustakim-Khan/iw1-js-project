@@ -1,3 +1,7 @@
 button {
     color: red;
 }
+
+table, tr, td, thead {
+    border: 1px solid black;
+}
