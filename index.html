@@ -10,7 +10,14 @@
     <h1>Vanilla JavaScript Todo App</h1>
     <script type="text/javascript" src="app.js"></script>
     <div>
-        <button id="button" onclick="pressButtonTest()">Test</button>
+        <button id="button" onclick="pressButtonTest()">Copy</button>
+        <button onclick="printClipboard()">Get</button>
+    </div>
+
+    <div id="clipboard-container">
+        <p id="clipboard-content"></p>
+        <textarea id="content"></textarea>
+        <button onclick="copyToClipboard()">Copy</button>
     </div>
 </body>
 </html>
