@@ -1,13 +1,13 @@
-const kaban = document.getElementById("kaban");
+const kanban = document.getElementById("kanban");
 const task = document.getElementById("task");
 
-kaban.addEventListener("click", (e) => {
+kanban.addEventListener("click", (e) => {
   history.pushState(
     {
-      page: "Kaban",
+      page: "Kanban",
     },
-    "kaban",
-    "/kaban"
+    null,
+    "/kanban"
   );
 });
 
@@ -16,7 +16,7 @@ task.addEventListener("click", (e) => {
     {
       page: "Task",
     },
-    "Tasks",
+    null,
     "/tasks"
   );
 });
