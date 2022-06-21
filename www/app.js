@@ -1,14 +1,19 @@
 const kaban = document.getElementById("kaban");
 const task = document.getElementById("task");
+const pattern = new URLPattern({ pathname: '/tasks' });
+const p = new URLPattern({ pattern: '/kanban'});
+
 
 kaban.addEventListener("click", (e) => {
-  history.pushState(
+    console.log(location.pathname); // true
+    history.pushState(
     {
       page: "Kaban",
     },
     "kaban",
     "/kaban"
   );
+    console.log(pattern.test(`http://localhost/kaban`)); // false
 });
 
 task.addEventListener("click", (e) => {
@@ -19,4 +24,7 @@ task.addEventListener("click", (e) => {
     "Tasks",
     "/tasks"
   );
+    console.log(location.pathname);
+console.log(pattern.test(`http://localhost/tasks/tasks`)); // true
 });
+
