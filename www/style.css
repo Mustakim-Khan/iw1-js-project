@@ -9,6 +9,7 @@ body {
 button {
     color: red;
 }
+
 #main {
     width: auto;
     height: 100%;
@@ -48,4 +49,21 @@ input:invalid {
 
 input:valid {
     border: 3px solid mediumseagreen;
+
+
+.container{
+    background-color: black;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.draggable{
+    padding: 1rem;
+    background-color: aliceblue;
+    border: 1px solid black;
+    cursor: move;
+}
+
+.draggable.dragging {
+    opacity: 0.5;
 }
