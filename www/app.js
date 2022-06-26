@@ -4,11 +4,12 @@ const STATUS_DOING = 'En cours';
 const STATUS_TO_VALIDATE = 'A Valider';
 const STATUS_DONE = 'Fait';
 let currentTaskId = 1;
-
+let allTasks = (localStorage.tasks ? JSON.parse(localStorage.tasks) : []);
 
 const kanban = document.getElementById("kanban");
 const task = document.getElementById("task");
 const fillTasksButton = document.getElementById("fillTasksButton");
+const main = document.getElementById('main');
 
 kanban.addEventListener("click", (e) => {
   history.pushState(
@@ -49,7 +50,7 @@ fillTasksButton.addEventListener("click", (e) => {
     console.log(t8);
 })
 
-
+// Task
 class Task {
     constructor(status, title, content) {
         this._id = currentTaskId;
@@ -86,6 +87,54 @@ class Task {
     set content(value) {
         this._content = value;
     }
+}
+
+
+
+let form = document.createElement('form');
+form.setAttribute('method', 'post');
+form.setAttribute('action', '');
+
+let inputText = document.createElement('input');
+let inputButton = document.createElement('input');
+
+inputText.setAttribute('type', 'text');
+inputText.setAttribute('name', 'name');
+inputText.setAttribute('value', '');
+inputText.setAttribute('placeholder', 'Nom de la tâche');
+inputButton.setAttribute('type', 'button');
+inputButton.setAttribute('value', 'Créer');
+
+form.append(inputText);
+form.append(inputButton);
+
+main.append(form);
+
+form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const taskTitle = inputText.value;
+    inputText.value = '';
+
+    let task = new Task(STATUS_TO_PLAN, taskTitle, '');
+    allTasks.push(task);
+    localStorage.setItem('tasks', JSON.stringify(allTasks));
+
+    displayStoredTasks();
+
+    let p = document.createElement('p');
+    p.innerText = taskTitle;
+    main.append(p);
+});
+
+const displayStoredTasks = () => {
+    console.clear();
+    let div = document.createElement('div');
+    
+
+    let storedTasks = JSON.parse(localStorage.getItem('tasks'));
+    storedTasks.forEach((task) => {
+        console.log(task);
+    })
 }
 
 /*
