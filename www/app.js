@@ -3,32 +3,62 @@ const STATUS_TO_PLAN = 'A Planifier';
 const STATUS_DOING = 'En cours';
 const STATUS_TO_VALIDATE = 'A Valider';
 const STATUS_DONE = 'Fait';
-let currentTaskId = 1;
-let allTasks = (localStorage.tasks ? JSON.parse(localStorage.tasks) : []);
+let nextTaskId = (localStorage.getItem('nextTaskId') ? parseInt(localStorage.getItem('nextTaskId')) : 1);
+let allTasks = (localStorage.getItem('tasks') ? JSON.parse(localStorage.getItem('tasks')) : []);
+
 
 const kanban = document.getElementById("kanban");
 const task = document.getElementById("task");
 const fillTasksButton = document.getElementById("fillTasksButton");
 const main = document.getElementById('main');
 
+const fillContainer = (container) => {
+    allTasks.forEach((task) => {
+        let card = document.createElement('div');
+        card.setAttribute('class', 'card');
+        let p = document.createElement('p');
+        p.setAttribute('class', 'card-title');
+        p.innerText = task._title;
+        card.append(p);
+        container.append(card);
+    });
+}
+
+const displayStoredTasks = () => {
+    if (allTasks.length > 0) {
+        let cardsContainer = document.getElementById('cards-container');
+        if (cardsContainer === null) {
+            cardsContainer = document.createElement('div');
+            cardsContainer.setAttribute('id', 'cards-container');
+            fillContainer(cardsContainer);
+            main.append(cardsContainer);
+        } else {
+            let newCardsContainer = document.createElement('div');
+            newCardsContainer.setAttribute('id', 'cards-container');
+            fillContainer(newCardsContainer);
+            main.replaceChild(newCardsContainer, cardsContainer);
+        }
+    }
+}
+
 kanban.addEventListener("click", (e) => {
-  history.pushState(
-    {
-      page: "Kanban",
-    },
-    null,
-    "/kanban"
-  );
+    history.pushState(
+        {
+            page: "Kanban",
+        },
+        null,
+        "/kanban"
+    );
 });
 
 task.addEventListener("click", (e) => {
-  history.pushState(
-    {
-      page: "Task",
-    },
-    null,
-    "/tasks"
-  );
+    history.pushState(
+        {
+            page: "Task",
+        },
+        null,
+        "/tasks"
+    );
 });
 
 fillTasksButton.addEventListener("click", (e) => {
@@ -53,11 +83,12 @@ fillTasksButton.addEventListener("click", (e) => {
 // Task
 class Task {
     constructor(status, title, content) {
-        this._id = currentTaskId;
+        this._id = nextTaskId;
         this._status = status;
         this._title = title;
         this._content = content;
-        currentTaskId++;
+        nextTaskId++;
+        localStorage.setItem('nextTaskId', nextTaskId.toString());
     }
 
     get id() {
@@ -90,7 +121,6 @@ class Task {
 }
 
 
-
 let form = document.createElement('form');
 form.setAttribute('method', 'post');
 form.setAttribute('action', '');
@@ -109,6 +139,7 @@ form.append(inputText);
 form.append(inputButton);
 
 main.append(form);
+displayStoredTasks();
 
 form.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -121,21 +152,11 @@ form.addEventListener('submit', (e) => {
 
     displayStoredTasks();
 
-    let p = document.createElement('p');
-    p.innerText = taskTitle;
-    main.append(p);
+    /*    let p = document.createElement('p');
+        p.innerText = taskTitle;
+        main.append(p);*/
 });
 
-const displayStoredTasks = () => {
-    console.clear();
-    let div = document.createElement('div');
-    
-
-    let storedTasks = JSON.parse(localStorage.getItem('tasks'));
-    storedTasks.forEach((task) => {
-        console.log(task);
-    })
-}
 
 /*
 class Kanban {
