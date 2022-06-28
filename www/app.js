@@ -15,6 +15,7 @@ const main = document.getElementById('main');
 const fillContainer = (container) => {
     allTasks.forEach((task) => {
         let card = document.createElement('div');
+        card.setAttribute('data-id', task._id);
         card.setAttribute('class', 'card');
         let p = document.createElement('p');
         p.setAttribute('class', 'card-title');
@@ -157,6 +158,13 @@ form.addEventListener('submit', (e) => {
         main.append(p);*/
 });
 
+let cards = document.querySelectorAll('.card');
+cards.forEach((card) => {
+    card.addEventListener('click', () => {
+        const cardId = card.dataset.id;
+        console.log(allTasks.find((t) => t.id === cardId));
+    });
+});
 
 /*
 class Kanban {
