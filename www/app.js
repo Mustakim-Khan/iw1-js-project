@@ -171,6 +171,11 @@ closeButton.classList.add('close');
 closeButton.innerHTML = '&times;';
 
 let taskEditForm = document.createElement('form');
+taskEditForm.setAttribute('method', 'post');
+taskEditForm.setAttribute('action', '');
+
+let taskEditFormSubmitButton = document.createElement('input');
+taskEditFormSubmitButton.setAttribute('type', 'submit');
 
 let taskIdDiv = document.createElement('div');
 taskIdDiv.style.display = 'flex';
@@ -185,6 +190,9 @@ let taskId = document.createElement('p');
 let taskTitle = document.createElement('input');
 let taskStatus = document.createElement('p');
 let taskContent = document.createElement('input');
+taskTitle.setAttribute('type', 'text');
+taskStatus.setAttribute('type', 'text');
+taskContent.setAttribute('type', 'text');
 
 let taskIdLabel = document.createElement('p');
 taskIdLabel.innerText = 'Id : ';
@@ -195,13 +203,14 @@ taskStatusLabel.innerText = 'Statut : ';
 let taskContentLabel = document.createElement('p');
 taskContentLabel.innerText = 'Contenu : ';
 
-
-taskTitle.setAttribute('type', 'text');
-taskStatus.setAttribute('type', 'text');
-taskContent.setAttribute('type', 'text');
+taskEditForm.append(taskTitle);
+taskEditForm.append(taskStatus);
+taskEditForm.append(taskContent);
+taskEditForm.append(taskEditFormSubmitButton);
 
 taskModalContent.append(closeButton);
-
+taskModalContent.append(taskEditForm);
+console.log(taskEditForm.innerHTML);
 taskIdDiv.append(taskIdLabel);
 taskTitleDiv.append(taskTitleLabel);
 taskStatusDiv.append(taskStatusLabel);
@@ -233,14 +242,14 @@ cards.forEach((card) => {
         const cardId = parseInt(card.dataset.id);
         allTasks.forEach((task) => {
             if (task._id === cardId) {
-                taskId.innerText = `${ task._id }`;
+/*                taskId.innerText = `${ task._id }`;
                 taskIdDiv.append(taskId);
                 taskTitle.value = `${ task._title }`;
                 taskTitleDiv.append(taskTitle);
                 taskStatus.innerText = `${ task._status }`;
                 taskStatusDiv.append(taskStatus);
                 taskContent.value = `${ task._content }`;
-                taskContentDiv.append(taskContent);
+                taskContentDiv.append(taskContent);*/
                 taskModalContainer.style.display = 'block';
             }
         });
