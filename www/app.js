@@ -121,10 +121,10 @@ class Task {
     }
 }
 
-
-let form = document.createElement('form');
-form.setAttribute('method', 'post');
-form.setAttribute('action', '');
+// task creation taskCreationForm
+let taskCreationForm = document.createElement('form');
+taskCreationForm.setAttribute('method', 'post');
+taskCreationForm.setAttribute('action', '');
 
 let inputText = document.createElement('input');
 let inputButton = document.createElement('input');
@@ -136,13 +136,13 @@ inputText.setAttribute('placeholder', 'Nom de la tâche');
 inputButton.setAttribute('type', 'button');
 inputButton.setAttribute('value', 'Créer');
 
-form.append(inputText);
-form.append(inputButton);
+taskCreationForm.append(inputText);
+taskCreationForm.append(inputButton);
 
-main.append(form);
+main.append(taskCreationForm);
 displayStoredTasks();
 
-form.addEventListener('submit', (e) => {
+taskCreationForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const taskTitle = inputText.value;
     inputText.value = '';
@@ -158,11 +158,92 @@ form.addEventListener('submit', (e) => {
         main.append(p);*/
 });
 
+// view task info
+let taskModalContainer = document.createElement('div');
+taskModalContainer.setAttribute('id', 'myModal');
+taskModalContainer.classList.add('modal');
+
+let taskModalContent = document.createElement('div');
+taskModalContent.classList.add('modal-content');
+
+let closeButton = document.createElement('span');
+closeButton.classList.add('close');
+closeButton.innerHTML = '&times;';
+
+let taskEditForm = document.createElement('form');
+
+let taskIdDiv = document.createElement('div');
+taskIdDiv.style.display = 'flex';
+let taskTitleDiv = document.createElement('div');
+taskTitleDiv.style.display = 'flex';
+let taskStatusDiv = document.createElement('div');
+taskStatusDiv.style.display = 'flex';
+let taskContentDiv = document.createElement('div');
+taskContentDiv.style.display = 'flex';
+
+let taskId = document.createElement('p');
+let taskTitle = document.createElement('input');
+let taskStatus = document.createElement('p');
+let taskContent = document.createElement('input');
+
+let taskIdLabel = document.createElement('p');
+taskIdLabel.innerText = 'Id : ';
+let taskTitleLabel = document.createElement('p');
+taskTitleLabel.innerText = 'Titre : ';
+let taskStatusLabel = document.createElement('p');
+taskStatusLabel.innerText = 'Statut : ';
+let taskContentLabel = document.createElement('p');
+taskContentLabel.innerText = 'Contenu : ';
+
+
+taskTitle.setAttribute('type', 'text');
+taskStatus.setAttribute('type', 'text');
+taskContent.setAttribute('type', 'text');
+
+taskModalContent.append(closeButton);
+
+taskIdDiv.append(taskIdLabel);
+taskTitleDiv.append(taskTitleLabel);
+taskStatusDiv.append(taskStatusLabel);
+taskContentDiv.append(taskContentLabel);
+
+taskModalContent.append(taskIdDiv);
+taskModalContent.append(taskTitleDiv);
+taskModalContent.append(taskStatusDiv);
+taskModalContent.append(taskContentDiv);
+
+/*
+taskModalContent.append(taskId);
+taskModalContent.append(taskTitle);
+taskModalContent.append(taskStatus);
+taskModalContent.append(taskContent);
+*/
+
+taskModalContainer.append(taskModalContent);
+
+main.append(taskModalContainer);
+
+closeButton.addEventListener('click', () => {
+    taskModalContainer.style.display = 'none';
+});
+
 let cards = document.querySelectorAll('.card');
 cards.forEach((card) => {
     card.addEventListener('click', () => {
-        const cardId = card.dataset.id;
-        console.log(allTasks.find((t) => t.id === cardId));
+        const cardId = parseInt(card.dataset.id);
+        allTasks.forEach((task) => {
+            if (task._id === cardId) {
+                taskId.innerText = `${ task._id }`;
+                taskIdDiv.append(taskId);
+                taskTitle.value = `${ task._title }`;
+                taskTitleDiv.append(taskTitle);
+                taskStatus.innerText = `${ task._status }`;
+                taskStatusDiv.append(taskStatus);
+                taskContent.value = `${ task._content }`;
+                taskContentDiv.append(taskContent);
+                taskModalContainer.style.display = 'block';
+            }
+        });
     });
 });
 
