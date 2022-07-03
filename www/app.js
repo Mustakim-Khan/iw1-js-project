@@ -43,7 +43,7 @@ taskCreationForm.setAttribute('method', 'post');
 taskCreationForm.setAttribute('action', '');
 
 let inputTtile = document.createElement('input');
-/*let selectStatus = document.createElement('select');*/
+let selectStatus = document.createElement('select');
 let inputContent = document.createElement('input');
 let inputButton = document.createElement('input');
 
@@ -59,7 +59,7 @@ inputContent.setAttribute('placeholder', 'Contenu de la tâche');
 
 inputButton.setAttribute('type', 'button');
 inputButton.setAttribute('value', 'Créer');
-/*
+
 let optionToPlan = document.createElement('option');
 optionToPlan.value = STATUS_TO_PLAN;
 optionToPlan.text = STATUS_TO_PLAN;
@@ -79,11 +79,11 @@ let optionToValidate = document.createElement('option');
 optionToValidate.value = STATUS_TO_VALIDATE;
 optionToValidate.text = STATUS_TO_VALIDATE;
 selectStatus.append(optionToValidate);
-*/
+
 
 
 taskCreationForm.append(inputTtile);
-/*taskCreationForm.append(selectStatus);*/
+taskCreationForm.append(selectStatus);
 taskCreationForm.append(inputContent);
 taskCreationForm.append(inputButton);
 
@@ -208,12 +208,13 @@ inputButton.addEventListener('click', (e) => {
 
 taskCreationForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    console.log(e)
     const taskTitle = inputTtile.value;
     const taskContent = inputContent.value;
+    const taskStatus = selectStatus.options[selectStatus.selectedIndex].text;
     inputTtile.value = '';
     inputContent.value = '';
-    let task = new Task(STATUS_TO_PLAN, taskTitle, taskContent);
+    selectStatus.options.selectedIndex = 0;
+    let task = new Task(taskStatus, taskTitle, taskContent);
     allTasks.push(task);
     localStorage.setItem('tasks', JSON.stringify(allTasks));
     cardsContainer = displayStoredTasksOnAdd();
