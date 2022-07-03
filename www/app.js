@@ -1,3 +1,31 @@
+// Common variables
+const main = document.getElementById('main');
+const kanban = document.getElementById("kanban");
+const task = document.getElementById("task");
+
+kanban.addEventListener("click", (e) => {
+    history.pushState(
+        {
+            lastPage: location.pathname,
+        },
+        null,
+        "/kanban"
+    );
+    window.dispatchEvent(new Event('pathnamechange'));
+});
+
+task.addEventListener("click", (e) => {
+    history.pushState(
+        {
+            lastPage: location.pathname,
+        },
+        null,
+        "/tasks"
+    );
+    window.dispatchEvent(new Event('pathnamechange'));
+});
+
+
 // Tasks variables
 const STATUS_TO_PLAN = 'A Planifier';
 const STATUS_DOING = 'En cours';
@@ -6,61 +34,42 @@ const STATUS_DONE = 'Fait';
 let nextTaskId = (localStorage.getItem('nextTaskId') ? parseInt(localStorage.getItem('nextTaskId')) : 1);
 let allTasks = (localStorage.getItem('tasks') ? JSON.parse(localStorage.getItem('tasks')) : []);
 
-
-const kanban = document.getElementById("kanban");
-const task = document.getElementById("task");
+// /tasks page
+let cardsContainer = document.getElementById('cards-container');
 const fillTasksButton = document.getElementById("fillTasksButton");
-const main = document.getElementById('main');
 
-const fillContainer = (container) => {
+let taskCreationForm = document.createElement('form');
+taskCreationForm.setAttribute('method', 'post');
+taskCreationForm.setAttribute('action', '');
+
+let inputText = document.createElement('input');
+let inputButton = document.createElement('input');
+
+
+inputText.setAttribute('type', 'text');
+inputText.setAttribute('name', 'name');
+inputText.setAttribute('value', '');
+inputText.setAttribute('placeholder', 'Nom de la tâche');
+inputButton.setAttribute('type', 'button');
+inputButton.setAttribute('value', 'Créer');
+
+taskCreationForm.append(inputText);
+taskCreationForm.append(inputButton);
+
+const fillCardsContainer = (container) => {
     allTasks.forEach((task) => {
-        let card = document.createElement('div');
-        card.setAttribute('data-id', task._id);
-        card.setAttribute('class', 'card');
-        let p = document.createElement('p');
-        p.setAttribute('class', 'card-title');
-        p.innerText = task._title;
-        card.append(p);
-        container.append(card);
+        if (task._status === STATUS_TO_PLAN) {
+            let card = document.createElement('div');
+            card.setAttribute('data-id', task._id);
+            card.setAttribute('class', 'card');
+            let p = document.createElement('p');
+            p.setAttribute('class', 'card-title');
+            p.innerText = task._title;
+            card.append(p);
+            container.append(card);
+        }
     });
 }
-
-const displayStoredTasks = () => {
-    if (allTasks.length > 0) {
-        let cardsContainer = document.getElementById('cards-container');
-        if (cardsContainer === null) {
-            cardsContainer = document.createElement('div');
-            cardsContainer.setAttribute('id', 'cards-container');
-            fillContainer(cardsContainer);
-            main.append(cardsContainer);
-        } else {
-            let newCardsContainer = document.createElement('div');
-            newCardsContainer.setAttribute('id', 'cards-container');
-            fillContainer(newCardsContainer);
-            main.replaceChild(newCardsContainer, cardsContainer);
-        }
-    }
-}
-
-kanban.addEventListener("click", (e) => {
-    history.pushState(
-        {
-            page: "Kanban",
-        },
-        null,
-        "/kanban"
-    );
-});
-
-task.addEventListener("click", (e) => {
-    history.pushState(
-        {
-            page: "Task",
-        },
-        null,
-        "/tasks"
-    );
-});
 
 fillTasksButton.addEventListener("click", (e) => {
     let t1 = new Task(STATUS_TO_PLAN, "To Plan 1", "To Plan 1 Content");
@@ -79,9 +88,44 @@ fillTasksButton.addEventListener("click", (e) => {
     console.log(t6);
     console.log(t7);
     console.log(t8);
-})
+});
 
-// Task
+const displayStoredTasksOnComeInPage = () => {
+    console.log('displayStoredTasksOnComeInPage');
+    if (allTasks.length > 0) {
+        if (cardsContainer === null) {
+            console.log(cardsContainer);
+            cardsContainer = document.createElement('div');
+            cardsContainer.setAttribute('id', 'cards-container');
+            fillCardsContainer(cardsContainer);
+            main.append(cardsContainer);
+            return cardsContainer;
+        }
+    }
+}
+
+const displayStoredTasksOnAdd = () => {
+    console.log('displayStoredTasksOnAdd')
+    if (allTasks.length > 0) {
+        if (cardsContainer === null) {
+            console.log(cardsContainer);
+            cardsContainer = document.createElement('div');
+            cardsContainer.setAttribute('id', 'cards-container');
+            fillCardsContainer(cardsContainer);
+            main.append(cardsContainer);
+            return cardsContainer;
+        } else {
+            console.log('replaceChild');
+            console.log(cardsContainer);
+            let newCardsContainer = document.createElement('div');
+            newCardsContainer.setAttribute('id', 'cards-container');
+            fillCardsContainer(newCardsContainer);
+            main.replaceChild(newCardsContainer, cardsContainer);
+            return newCardsContainer;
+        }
+    }
+}
+
 class Task {
     constructor(status, title, content) {
         this._id = nextTaskId;
@@ -121,35 +165,39 @@ class Task {
     }
 }
 
-// task creation taskCreationForm
-let taskCreationForm = document.createElement('form');
-taskCreationForm.setAttribute('method', 'post');
-taskCreationForm.setAttribute('action', '');
+// task creation => taskCreationForm
+const taskForm = () => {
 
-let inputText = document.createElement('input');
-let inputButton = document.createElement('input');
+}
 
-inputText.setAttribute('type', 'text');
-inputText.setAttribute('name', 'name');
-inputText.setAttribute('value', '');
-inputText.setAttribute('placeholder', 'Nom de la tâche');
-inputButton.setAttribute('type', 'button');
-inputButton.setAttribute('value', 'Créer');
-
-taskCreationForm.append(inputText);
-taskCreationForm.append(inputButton);
-
-main.append(taskCreationForm);
-displayStoredTasks();
+//main.append(taskCreationForm);
 
 taskCreationForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const taskTitle = inputText.value;
     inputText.value = '';
-
     let task = new Task(STATUS_TO_PLAN, taskTitle, '');
     allTasks.push(task);
     localStorage.setItem('tasks', JSON.stringify(allTasks));
-
-    displayStoredTasks();
+    cardsContainer = displayStoredTasksOnAdd();
 });
+
+// Path handler
+window.addEventListener('pathnamechange', () => {
+    console.log(location.pathname);
+    if (location.pathname === '/tasks') {
+        console.log(history.state)
+        main.append(taskCreationForm);
+        displayStoredTasksOnComeInPage();
+        if (cardsContainer !== null) main.append(cardsContainer)
+    } else if ('/kanban') {
+        console.log(history.state)
+        if (history.state.lastPage === '/tasks') {
+            main.removeChild(taskCreationForm);
+            if (cardsContainer !== null)
+                main.removeChild(cardsContainer);
+        }
+    } else {
+
+    }
+})
