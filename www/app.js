@@ -42,18 +42,49 @@ let taskCreationForm = document.createElement('form');
 taskCreationForm.setAttribute('method', 'post');
 taskCreationForm.setAttribute('action', '');
 
-let inputText = document.createElement('input');
+let inputTtile = document.createElement('input');
+/*let selectStatus = document.createElement('select');*/
+let inputContent = document.createElement('input');
 let inputButton = document.createElement('input');
 
+inputTtile.setAttribute('type', 'text');
+inputTtile.setAttribute('name', 'titleInput');
+inputTtile.setAttribute('value', '');
+inputTtile.setAttribute('placeholder', 'Nom de la tâche');
 
-inputText.setAttribute('type', 'text');
-inputText.setAttribute('name', 'name');
-inputText.setAttribute('value', '');
-inputText.setAttribute('placeholder', 'Nom de la tâche');
+inputContent.setAttribute('type', 'text');
+inputContent.setAttribute('name', 'contentInput');
+inputContent.setAttribute('value', '');
+inputContent.setAttribute('placeholder', 'Contenu de la tâche');
+
 inputButton.setAttribute('type', 'button');
 inputButton.setAttribute('value', 'Créer');
+/*
+let optionToPlan = document.createElement('option');
+optionToPlan.value = STATUS_TO_PLAN;
+optionToPlan.text = STATUS_TO_PLAN;
+selectStatus.append(optionToPlan);
 
-taskCreationForm.append(inputText);
+let optionDoing = document.createElement('option');
+optionDoing.value = STATUS_DOING;
+optionDoing.text = STATUS_DOING;
+selectStatus.append(optionDoing);
+
+let optionDone = document.createElement('option');
+optionDone.value = STATUS_DONE;
+optionDone.text = STATUS_DONE;
+selectStatus.append(optionDone);
+
+let optionToValidate = document.createElement('option');
+optionToValidate.value = STATUS_TO_VALIDATE;
+optionToValidate.text = STATUS_TO_VALIDATE;
+selectStatus.append(optionToValidate);
+*/
+
+
+taskCreationForm.append(inputTtile);
+/*taskCreationForm.append(selectStatus);*/
+taskCreationForm.append(inputContent);
 taskCreationForm.append(inputButton);
 
 const fillCardsContainer = (container) => {
@@ -91,10 +122,8 @@ fillTasksButton.addEventListener("click", (e) => {
 });
 
 const displayStoredTasksOnComeInPage = () => {
-    console.log('displayStoredTasksOnComeInPage');
     if (allTasks.length > 0) {
         if (cardsContainer === null) {
-            console.log(cardsContainer);
             cardsContainer = document.createElement('div');
             cardsContainer.setAttribute('id', 'cards-container');
             fillCardsContainer(cardsContainer);
@@ -105,7 +134,6 @@ const displayStoredTasksOnComeInPage = () => {
 }
 
 const displayStoredTasksOnAdd = () => {
-    console.log('displayStoredTasksOnAdd')
     if (allTasks.length > 0) {
         if (cardsContainer === null) {
             console.log(cardsContainer);
@@ -172,11 +200,20 @@ const taskForm = () => {
 
 //main.append(taskCreationForm);
 
+// Listeners
+inputButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    taskCreationForm.dispatchEvent(new Event('submit'));
+});
+
 taskCreationForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    const taskTitle = inputText.value;
-    inputText.value = '';
-    let task = new Task(STATUS_TO_PLAN, taskTitle, '');
+    console.log(e)
+    const taskTitle = inputTtile.value;
+    const taskContent = inputContent.value;
+    inputTtile.value = '';
+    inputContent.value = '';
+    let task = new Task(STATUS_TO_PLAN, taskTitle, taskContent);
     allTasks.push(task);
     localStorage.setItem('tasks', JSON.stringify(allTasks));
     cardsContainer = displayStoredTasksOnAdd();
