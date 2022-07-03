@@ -10,15 +10,18 @@ button {
     color: red;
 }
 #main {
+    display: flex;
     width: auto;
     height: 100%;
+    align-items: center;
+    justify-content: center;
 }
 
 #cards-container {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: flex-start;
 }
 
 .card {
