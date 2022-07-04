@@ -42,20 +42,22 @@ let taskCreationForm = document.createElement('form');
 taskCreationForm.setAttribute('method', 'post');
 taskCreationForm.setAttribute('action', '');
 
-let inputTtile = document.createElement('input');
+let inputTitle = document.createElement('input');
 let selectStatus = document.createElement('select');
 let inputContent = document.createElement('input');
 let inputButton = document.createElement('input');
 
-inputTtile.setAttribute('type', 'text');
-inputTtile.setAttribute('name', 'titleInput');
-inputTtile.setAttribute('value', '');
-inputTtile.setAttribute('placeholder', 'Nom de la tâche');
+inputTitle.setAttribute('type', 'text');
+inputTitle.setAttribute('name', 'titleInput');
+inputTitle.setAttribute('value', '');
+inputTitle.setAttribute('placeholder', 'Nom de la tâche');
+inputTitle.setAttribute('required', 'required');
 
 inputContent.setAttribute('type', 'text');
 inputContent.setAttribute('name', 'contentInput');
 inputContent.setAttribute('value', '');
 inputContent.setAttribute('placeholder', 'Contenu de la tâche');
+inputContent.setAttribute('required', 'required');
 
 inputButton.setAttribute('type', 'button');
 inputButton.setAttribute('value', 'Créer');
@@ -82,7 +84,7 @@ selectStatus.append(optionToValidate);
 
 
 
-taskCreationForm.append(inputTtile);
+taskCreationForm.append(inputTitle);
 taskCreationForm.append(selectStatus);
 taskCreationForm.append(inputContent);
 taskCreationForm.append(inputButton);
@@ -202,22 +204,22 @@ const taskForm = () => {
 
 // Listeners
 inputButton.addEventListener('click', (e) => {
-    e.preventDefault();
     taskCreationForm.dispatchEvent(new Event('submit'));
 });
 
 taskCreationForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    const taskTitle = inputTtile.value;
+    
+    /*const taskTitle = inputTitle.value;
     const taskContent = inputContent.value;
     const taskStatus = selectStatus.options[selectStatus.selectedIndex].text;
-    inputTtile.value = '';
+    inputTitle.value = '';
     inputContent.value = '';
     selectStatus.options.selectedIndex = 0;
     let task = new Task(taskStatus, taskTitle, taskContent);
     allTasks.push(task);
     localStorage.setItem('tasks', JSON.stringify(allTasks));
-    cardsContainer = displayStoredTasksOnAdd();
+    cardsContainer = displayStoredTasksOnAdd();*/
 });
 
 // Path handler
