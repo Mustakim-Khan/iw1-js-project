@@ -1,83 +1,97 @@
-.container {
-    width: 70%;
-    min-width: 50%;
-    margin: auto;
-    display: flex;
-    flex-direction: column;
+
+  * {
+  
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Orbitron";
   }
   
-  .kanban-heading {
+  .container {
+    background: linear-gradient(45deg, #63118a, #eaad32);
+    height: 100vh;
+    overflow: hidden;
     display: flex;
-    flex-direction: row;
-    justify-content: center;
-    font-family: sans-serif;
-  }
-  
-  .kanban-heading-text {
-    font-size: 1.8rem;
-    background-color: rgb(150, 188, 199);
-    padding: 0.8rem 1.7rem;
-    border-radius: 0.5rem;
-    margin: 1rem;
-  }
-  
-  .kanban-board {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    font-family: sans-serif;
-    margin-block-end: 0.6rem;
-    margin-block-start: 0.4rem;
+    gap: 1px;
     
-  }
   
-  .kanban-block {
-
-    padding: 0.6rem;
-    width: 30.5%;
-    min-width: 10rem;
-    min-height: 4.5rem;
-    border-radius: 0.3rem;
-
   }
-  
+ 
+  .kanbanblock {
+
+    flex: 1;
+    padding: 0 1rem;
+    background: linear-gradient(45deg, #63118a, #eaad32);
+    border-radius: 0.2rem;
+    overflow: auto;
+
+  } 
   #todo {
 
-    background-color: #555275;
-    text-align: center;
     
+    text-align: center;
+    color: hsla(282, 77%, 10%, 0.816);
+    font-size: xx-large;
   }
   
-  #inprogress {
 
-    justify-content: space-between;
-    background-color: #5f7ca7;
+  
+  #Inprogress {
+
+    
     text-align: center;
+    color: hsla(282, 77%, 10%, 0.816);
+    font-size: xx-large;
   }
   #tovalidate {
 
-    justify-content: space-between;
-    background-color: #717BD8;
+   
     text-align: center;
+    color: hsla(282, 77%, 10%, 0.816);
+    font-size: xx-large;
   }
   #done {
-
-    background-color: #7d7a9e;
+   
     text-align: center;
+    color: hsla(282, 77%, 10%, 0.816);
+    font-size: xx-large;
   }
 
-  body {
-    justify-content: space-between;
-
-    background-color: black;
-  }
-  .task {
-    background-color: white;
-    margin: 0.2rem 0rem 0.3rem 0rem;
-    border: 0.1rem solid black;
+ 
+  .droppable {
+    flex: 2;
+    padding: 0 1rem;
+    background: linear-gradient(45deg, #63118a, #eaad32);
     border-radius: 0.2rem;
-    padding: 0.5rem 0.2rem 0.5rem 2rem;
-
+    overflow: auto;
   }
+  
+  .draggable {
+    margin: 1rem 0;
+    line-height: 100%;
+    overflow: hidden;
+    cursor: move;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: #966363;
+    background-color: rgba(255, 248, 248, 0.89);
+    transition: var(--transitionTime);
+  }
+  
+  .dragging {
+    opacity: 0.5;
+  }
+  
+  .new-added {
+    animation: insert var(--transitionTime) linear;
+  }
+  
+  .will-remove {
+    animation: remove var(--transitionTime) linear;
+    animation-fill-mode: forwards;
+  }
+  
   
   
