@@ -38,6 +38,10 @@ let allTasks = (localStorage.getItem('tasks') ? JSON.parse(localStorage.getItem(
 let cardsContainer = document.getElementById('cards-container');
 const fillTasksButton = document.getElementById("fillTasksButton");
 
+let errorDiv = document.createElement('div');
+let errorMessage = document.createElement('p');
+errorDiv.append(errorMessage);
+
 let taskCreationForm = document.createElement('form');
 taskCreationForm.setAttribute('method', 'post');
 taskCreationForm.setAttribute('action', '');
@@ -138,15 +142,12 @@ const displayStoredTasksOnComeInPage = () => {
 const displayStoredTasksOnAdd = () => {
     if (allTasks.length > 0) {
         if (cardsContainer === null) {
-            console.log(cardsContainer);
             cardsContainer = document.createElement('div');
             cardsContainer.setAttribute('id', 'cards-container');
             fillCardsContainer(cardsContainer);
             main.append(cardsContainer);
             return cardsContainer;
         } else {
-            console.log('replaceChild');
-            console.log(cardsContainer);
             let newCardsContainer = document.createElement('div');
             newCardsContainer.setAttribute('id', 'cards-container');
             fillCardsContainer(newCardsContainer);
@@ -209,30 +210,42 @@ inputButton.addEventListener('click', (e) => {
 
 taskCreationForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    
-    /*const taskTitle = inputTitle.value;
+    let messages = [];
+    const taskTitle = inputTitle.value;
     const taskContent = inputContent.value;
     const taskStatus = selectStatus.options[selectStatus.selectedIndex].text;
-    inputTitle.value = '';
-    inputContent.value = '';
-    selectStatus.options.selectedIndex = 0;
-    let task = new Task(taskStatus, taskTitle, taskContent);
-    allTasks.push(task);
-    localStorage.setItem('tasks', JSON.stringify(allTasks));
-    cardsContainer = displayStoredTasksOnAdd();*/
+    if (taskTitle === '' || taskTitle === null) {
+        messages.push('Title is required');
+    }
+    if (taskContent === '' || taskContent === null) {
+        messages.push('Content is required');
+    }
+    if (messages.length > 0) {
+        errorMessage.innerText = messages.join(', ');
+        errorDiv.append(errorMessage);
+    } else{
+        messages.length = 0;
+        inputTitle.value = '';
+        inputContent.value = '';
+        errorDiv.removeChild(errorMessage);
+        selectStatus.options.selectedIndex = 0;
+        let task = new Task(taskStatus, taskTitle, taskContent);
+        allTasks.push(task);
+        localStorage.setItem('tasks', JSON.stringify(allTasks));
+    }
+    cardsContainer = displayStoredTasksOnAdd();
 });
 
 // Path handler
 window.addEventListener('pathnamechange', () => {
-    console.log(location.pathname);
     if (location.pathname === '/tasks') {
-        console.log(history.state)
+        main.append(errorDiv);
         main.append(taskCreationForm);
         displayStoredTasksOnComeInPage();
         if (cardsContainer !== null) main.append(cardsContainer)
     } else if ('/kanban') {
-        console.log(history.state)
         if (history.state.lastPage === '/tasks') {
+            main.removeChild(errorDiv);
             main.removeChild(taskCreationForm);
             if (cardsContainer !== null)
                 main.removeChild(cardsContainer);
@@ -240,4 +253,4 @@ window.addEventListener('pathnamechange', () => {
     } else {
 
     }
-})
+});
