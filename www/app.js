@@ -227,7 +227,7 @@ taskCreationForm.addEventListener('submit', (e) => {
         messages.length = 0;
         inputTitle.value = '';
         inputContent.value = '';
-        errorDiv.removeChild(errorMessage);
+        if (errorDiv.contains(errorMessage)) errorDiv.removeChild(errorMessage);
         selectStatus.options.selectedIndex = 0;
         let task = new Task(taskStatus, taskTitle, taskContent);
         allTasks.push(task);
