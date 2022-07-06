@@ -206,6 +206,7 @@ const taskInfoHandler = () => {
                 null,
                 `/tasks/${card.dataset.id}`
             );
+            window.dispatchEvent(new Event('pathnamechange'));
             console.log(card.dataset.id);
         });
     });
@@ -248,6 +249,7 @@ taskCreationForm.addEventListener('submit', (e) => {
 
 // Path handler
 window.addEventListener('pathnamechange', () => {
+    console.log('path handler !')
     if (location.pathname === '/tasks') {
         main.append(errorDiv);
         main.append(taskCreationForm);
