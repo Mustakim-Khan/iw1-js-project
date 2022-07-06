@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@900&display=swap");
 
   * {
   
@@ -94,4 +95,21 @@
   }
   
   
+  @keyframes insert {
+    from {
+      max-height: 0;
+    }
+    to {
+      max-height: 100vh;
+    }
+  }
   
+  @keyframes remove {
+    from {
+      max-height: 100vh;
+    }
+    to {
+      max-height: 0;
+      opacity: 0;
+    }
+  }

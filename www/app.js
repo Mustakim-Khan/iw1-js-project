@@ -93,3 +93,4 @@ function getClosestFrontSibling(droppable, draggingY) {
 
   return result;
 }
+
