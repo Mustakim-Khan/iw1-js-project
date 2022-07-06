@@ -197,8 +197,18 @@ class Task {
 }
 
 // task creation => taskCreationForm
-const taskForm = () => {
-
+const taskInfoHandler = () => {
+    let cards = document.querySelectorAll('.card');
+    cards.forEach((card) => {
+        card.addEventListener('click', (e) => {
+            history.pushState(
+                {cardId : card.dataset.id},
+                null,
+                `/tasks/${card.dataset.id}`
+            );
+            console.log(card.dataset.id);
+        });
+    });
 }
 
 //main.append(taskCreationForm);
@@ -242,7 +252,10 @@ window.addEventListener('pathnamechange', () => {
         main.append(errorDiv);
         main.append(taskCreationForm);
         displayStoredTasksOnComeInPage();
-        if (cardsContainer !== null) main.append(cardsContainer)
+        if (cardsContainer !== null) {
+            main.append(cardsContainer);
+            taskInfoHandler();
+        }
     } else if ('/kanban') {
         if (history.state.lastPage === '/tasks') {
             main.removeChild(errorDiv);
