@@ -25,7 +25,7 @@ button {
 }
 
 .card {
-    background-color: lightgrey;
+    background-color: aliceblue;
     border: 2px solid black;
     height: 5vh;
     width: 15vw;
@@ -52,9 +52,13 @@ input:valid {
 }
 
 .container{
-    background-color: black;
+    background-color: #ded8d8;
     padding: 1rem;
     margin-top: 1rem;
+    width: 20vw;
+    border: 1px solid black;
+    text-align: center;
+    height: fit-content;
 }
 
 .draggable{
@@ -62,8 +66,21 @@ input:valid {
     background-color: aliceblue;
     border: 1px solid black;
     cursor: move;
+    margin-top: 0.5rem;
 }
 
 .draggable.dragging {
     opacity: 0.5;
+}
+
+.kanban-container{
+    width: 80vw;
+    max-height: fit-content;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.container-title {
+    border-bottom: 2px solid black;
 }

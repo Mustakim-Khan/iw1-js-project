@@ -86,8 +86,6 @@ optionToValidate.value = STATUS_TO_VALIDATE;
 optionToValidate.text = STATUS_TO_VALIDATE;
 selectStatus.append(optionToValidate);
 
-
-
 taskCreationForm.append(inputTitle);
 taskCreationForm.append(selectStatus);
 taskCreationForm.append(inputContent);
@@ -202,7 +200,7 @@ const taskInfoHandler = () => {
     cards.forEach((card) => {
         card.addEventListener('click', (e) => {
             history.pushState(
-                {cardId : card.dataset.id},
+                {cardId: card.dataset.id},
                 null,
                 `/tasks/${card.dataset.id}`
             );
@@ -234,7 +232,7 @@ taskCreationForm.addEventListener('submit', (e) => {
     if (messages.length > 0) {
         errorMessage.innerText = messages.join(', ');
         errorDiv.append(errorMessage);
-    } else{
+    } else {
         messages.length = 0;
         inputTitle.value = '';
         inputContent.value = '';
@@ -271,35 +269,137 @@ window.addEventListener('pathnamechange', () => {
 });
 
 
+// KANBAN
+let kanbanContainer = document.createElement('div');
+kanbanContainer.classList.add('kanban-container');
+
+let toPlanContainerTitle = document.createElement('div');
+let doingContainerTitle = document.createElement('div');
+let toValidateContainerTitle = document.createElement('div');
+let doneContainerTitle = document.createElement('div');
+
+toPlanContainerTitle.setAttribute('class', 'container-title');
+doingContainerTitle.setAttribute('class', 'container-title');
+toValidateContainerTitle.setAttribute('class', 'container-title');
+doneContainerTitle.setAttribute('class', 'container-title');
+
+toPlanContainerTitle.innerText = STATUS_TO_PLAN;
+doingContainerTitle.innerText = STATUS_DOING;
+toValidateContainerTitle.innerText = STATUS_TO_VALIDATE;
+doneContainerTitle.innerText = STATUS_DONE;
+
+let toPlanContainer = document.createElement('div');
+let doingContainer = document.createElement('div');
+let toValidateContainer = document.createElement('div');
+let doneContainer = document.createElement('div');
+toPlanContainer.setAttribute('id', 'to-plan-container');
+doingContainer.setAttribute('id', 'doing-container');
+toValidateContainer.setAttribute('id', 'to-validate-container');
+doneContainer.setAttribute('id', 'done-container');
+
+toPlanContainer.append(toPlanContainerTitle);
+doingContainer.append(doingContainerTitle);
+toValidateContainer.append(toValidateContainerTitle);
+doneContainer.append(doneContainerTitle);
+toPlanContainer.classList.add('container');
+doingContainer.classList.add('container');
+toValidateContainer.classList.add('container');
+doneContainer.classList.add('container');
+
+kanbanContainer.append(toPlanContainer);
+kanbanContainer.append(doingContainer);
+kanbanContainer.append(toValidateContainer);
+kanbanContainer.append(doneContainer);
+
+const makeKanbanCardFromTask = (task) => {
+    let card = document.createElement('div');
+    card.classList.add('draggable');
+    card.setAttribute('draggable', 'true');
+    card.setAttribute('data-id', task._id);
+    card.innerText = task._title;
+    return card;
+}
+
+const fillKanban = () => {
+    if (allTasks.length > 0) {
+        allTasks.forEach((task) => {
+            switch (task._status) {
+                case STATUS_TO_PLAN:
+                    let cardToPlan = makeKanbanCardFromTask(task);
+                    toPlanContainer.append(cardToPlan);
+                    break;
+                case STATUS_DOING:
+                    let cardDoing = makeKanbanCardFromTask(task);
+                    doingContainer.append(cardDoing);
+                    break;
+                case STATUS_TO_VALIDATE:
+                    let cardToValidate = makeKanbanCardFromTask(task);
+                    toValidateContainer.append(cardToValidate);
+                    break;
+                case STATUS_DONE:
+                    let cardDone = makeKanbanCardFromTask(task);
+                    doneContainer.append(cardDone);
+                    break;
+            }
+        });
+    }
+}
+
+const changeTaskStatusInStorage = (draggable, status) => {
+    let task = allTasks.find((el) => {
+        return el._id === parseInt(draggable.dataset.id);
+    });
+    if (task) {
+        task._status = status;
+        localStorage.setItem('tasks', JSON.stringify(allTasks));
+    }
+}
+
+main.append(kanbanContainer);
+
+fillKanban();
+
 const draggables = document.querySelectorAll('.draggable');
 const containers = document.querySelectorAll('.container');
 
 draggables.forEach(draggable => {
     draggable.addEventListener('dragstart', (e) => {
+        console.log('start')
         draggable.classList.add('dragging')
     });
 
     draggable.addEventListener('dragend', (e) => {
-        console.log('start');
+        console.log('end');
+        switch (draggable.parentNode) {
+            case toPlanContainer:
+                changeTaskStatusInStorage(draggable, STATUS_TO_PLAN);
+                break;
+            case doingContainer:
+                changeTaskStatusInStorage(draggable, STATUS_DOING);
+                break;
+            case toValidateContainer:
+                changeTaskStatusInStorage(draggable, STATUS_TO_VALIDATE);
+                break;
+            case doneContainer:
+                changeTaskStatusInStorage(draggable, STATUS_DONE);
+                break;
+        }
         draggable.classList.remove('dragging')
     });
-})
-
+});
 
 containers.forEach(container => {
     container.addEventListener('dragover', (e) => {
         e.preventDefault();
         const afterElement = getDragAfterElement(container, e.clientY);
         const dragged = document.querySelector('.dragging');
-
         if (afterElement == null) {
             container.appendChild(dragged);
         } else {
             container.insertBefore(dragged, afterElement);
         }
     });
-})
-
+});
 
 const getDragAfterElement = (container, y) => {
     const draggableElements = [...container.querySelectorAll('.draggable:not(.dragged)')];
@@ -307,8 +407,8 @@ const getDragAfterElement = (container, y) => {
         const box = child.getBoundingClientRect();
         const offset = y - box.top - box.height / 2;
         if (offset < 0 && offset > closest.offset) {
-            return { offset : offset, element : child }
+            return {offset: offset, element: child}
         }
         return closest;
-    }, { offset : Number.NEGATIVE_INFINITY }).element;
+    }, {offset: Number.NEGATIVE_INFINITY}).element;
 }
