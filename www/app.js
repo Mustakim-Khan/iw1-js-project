@@ -33,24 +33,42 @@ class Kanban {
         this.toValidateTasks = [];
         this.doneTasks = [];
 
+        updateKanbanBoard();
+        localStorage.setItem('kanban', JSON.stringify(this));
+    }
+}
+
+const emptyKanbanBoard = () => {
+    if (kanbanBoard) {
+        kanbanBoard.toPlanTasks = [];
+        kanbanBoard.doingTasks = [];
+        kanbanBoard.toValidateTasks = [];
+        kanbanBoard.doneTasks = [];
+    }
+}
+
+const updateKanbanBoard = () => {
+    emptyKanbanBoard();
+    if (allTasks.length > 0) {
         allTasks.forEach((task) => {
             switch (task._status) {
                 case STATUS_TO_PLAN:
-                    this.toPlanTasks.push(task);
+                    kanbanBoard.toPlanTasks.push(task);
                     break;
                 case STATUS_DOING:
-                    this.doingTasks.push(task);
+                    kanbanBoard.doingTasks.push(task);
                     break;
                 case STATUS_TO_VALIDATE:
-                    this.toValidateTasks.push(task);
+                    kanbanBoard.toValidateTasks.push(task);
                     break;
                 case STATUS_DONE:
-                    this.doneTasks.push(task);
+                    kanbanBoard.doneTasks.push(task);
                     break;
             }
         });
     }
 }
+
 
 // Tasks variables
 const STATUS_TO_PLAN = 'A Planifier';
@@ -59,6 +77,8 @@ const STATUS_TO_VALIDATE = 'A Valider';
 const STATUS_DONE = 'Fait';
 let nextTaskId = (localStorage.getItem('nextTaskId') ? parseInt(localStorage.getItem('nextTaskId')) : 1);
 let allTasks = (localStorage.getItem('tasks') ? JSON.parse(localStorage.getItem('tasks')) : []);
+
+// Kanban variables
 let kanbanBoard = (localStorage.getItem('kanban') ? JSON.parse(localStorage.getItem('kanban')) : new Kanban());
 
 class Task {
@@ -317,10 +337,6 @@ const fillKanban = () => {
     }
 }
 
-const displayKanbanOnPageLoad = () => {
-
-}
-
 const emptyKanban = () => {
     let kanbanCards = document.querySelectorAll('.draggable');
     kanbanCards.forEach((card) => {
@@ -348,17 +364,19 @@ const changeTaskStatusInStorage = (draggable, status) => {
     });
     if (task) {
         task._status = status;
+        updateKanbanBoard();
         localStorage.setItem('tasks', JSON.stringify(allTasks));
+        localStorage.setItem('kanban', JSON.stringify(kanbanBoard));
     }
 }
-console.log(draggables)
+
 const draggableListener = () => {
     draggables = document.querySelectorAll('.draggable');
-    console.log(draggables)
     draggables.forEach(draggable => {
         draggable.addEventListener('dragstart', (e) => {
             console.log('start')
-            draggable.classList.add('dragging')
+            //console.log(kanbanBoard)
+            draggable.classList.add('dragging');
         });
 
         draggable.addEventListener('dragend', (e) => {
@@ -377,14 +395,14 @@ const draggableListener = () => {
                     changeTaskStatusInStorage(draggable, STATUS_DONE);
                     break;
             }
-            draggable.classList.remove('dragging')
+            draggable.classList.remove('dragging');
+            //console.log(kanbanBoard)
         });
     });
 }
-console.log(containers)
+
 const containersListener = () => {
     containers = document.querySelectorAll('.container');
-    console.log(containers)
     containers.forEach(container => {
         container.addEventListener('dragover', (e) => {
             e.preventDefault();
