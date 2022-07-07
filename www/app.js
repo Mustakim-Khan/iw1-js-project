@@ -33,7 +33,24 @@ class Kanban {
         this.toValidateTasks = [];
         this.doneTasks = [];
 
-        updateKanbanBoard();
+        if (allTasks.length > 0) {
+            allTasks.forEach((task) => {
+                switch (task._status) {
+                    case STATUS_TO_PLAN:
+                        kanbanBoard.toPlanTasks.push(task);
+                        break;
+                    case STATUS_DOING:
+                        kanbanBoard.doingTasks.push(task);
+                        break;
+                    case STATUS_TO_VALIDATE:
+                        kanbanBoard.toValidateTasks.push(task);
+                        break;
+                    case STATUS_DONE:
+                        kanbanBoard.doneTasks.push(task);
+                        break;
+                }
+            });
+        }
         localStorage.setItem('kanban', JSON.stringify(this));
     }
 }
