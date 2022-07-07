@@ -26,6 +26,32 @@ task.addEventListener("click", (e) => {
 });
 
 
+class Kanban {
+    constructor() {
+        this.toPlanTasks = [];
+        this.doingTasks = [];
+        this.toValidateTasks = [];
+        this.doneTasks = [];
+
+        allTasks.forEach((task) => {
+            switch (task._status) {
+                case STATUS_TO_PLAN:
+                    this.toPlanTasks.push(task);
+                    break;
+                case STATUS_DOING:
+                    this.doingTasks.push(task);
+                    break;
+                case STATUS_TO_VALIDATE:
+                    this.toValidateTasks.push(task);
+                    break;
+                case STATUS_DONE:
+                    this.doneTasks.push(task);
+                    break;
+            }
+        });
+    }
+}
+
 // Tasks variables
 const STATUS_TO_PLAN = 'A Planifier';
 const STATUS_DOING = 'En cours';
@@ -33,6 +59,46 @@ const STATUS_TO_VALIDATE = 'A Valider';
 const STATUS_DONE = 'Fait';
 let nextTaskId = (localStorage.getItem('nextTaskId') ? parseInt(localStorage.getItem('nextTaskId')) : 1);
 let allTasks = (localStorage.getItem('tasks') ? JSON.parse(localStorage.getItem('tasks')) : []);
+let kanbanBoard = (localStorage.getItem('kanban') ? JSON.parse(localStorage.getItem('kanban')) : new Kanban());
+
+class Task {
+    constructor(status, title, content) {
+        this._id = nextTaskId;
+        this._status = status;
+        this._title = title;
+        this._content = content;
+        nextTaskId++;
+        localStorage.setItem('nextTaskId', nextTaskId.toString());
+    }
+
+    get id() {
+        return this._id;
+    }
+
+    get status() {
+        return this._status;
+    }
+
+    set status(value) {
+        this._status = value;
+    }
+
+    get title() {
+        return this._title;
+    }
+
+    set title(value) {
+        this._title = value;
+    }
+
+    get content() {
+        return this._content;
+    }
+
+    set content(value) {
+        this._content = value;
+    }
+}
 
 // /tasks page
 let cardsContainer = document.getElementById('cards-container');
@@ -155,45 +221,6 @@ const displayStoredTasksOnAdd = () => {
     }
 }
 
-class Task {
-    constructor(status, title, content) {
-        this._id = nextTaskId;
-        this._status = status;
-        this._title = title;
-        this._content = content;
-        nextTaskId++;
-        localStorage.setItem('nextTaskId', nextTaskId.toString());
-    }
-
-    get id() {
-        return this._id;
-    }
-
-    get status() {
-        return this._status;
-    }
-
-    set status(value) {
-        this._status = value;
-    }
-
-    get title() {
-        return this._title;
-    }
-
-    set title(value) {
-        this._title = value;
-    }
-
-    get content() {
-        return this._content;
-    }
-
-    set content(value) {
-        this._content = value;
-    }
-}
-
 // task creation => taskCreationForm
 const taskInfoHandler = () => {
     let cards = document.querySelectorAll('.card');
@@ -210,66 +237,10 @@ const taskInfoHandler = () => {
     });
 }
 
-//main.append(taskCreationForm);
-
-// Listeners
-inputButton.addEventListener('click', (e) => {
-    taskCreationForm.dispatchEvent(new Event('submit'));
-});
-
-taskCreationForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    let messages = [];
-    const taskTitle = inputTitle.value;
-    const taskContent = inputContent.value;
-    const taskStatus = selectStatus.options[selectStatus.selectedIndex].text;
-    if (taskTitle === '' || taskTitle === null) {
-        messages.push('Title is required');
-    }
-    if (taskContent === '' || taskContent === null) {
-        messages.push('Content is required');
-    }
-    if (messages.length > 0) {
-        errorMessage.innerText = messages.join(', ');
-        errorDiv.append(errorMessage);
-    } else {
-        messages.length = 0;
-        inputTitle.value = '';
-        inputContent.value = '';
-        if (errorDiv.contains(errorMessage)) errorDiv.removeChild(errorMessage);
-        selectStatus.options.selectedIndex = 0;
-        let task = new Task(taskStatus, taskTitle, taskContent);
-        allTasks.push(task);
-        localStorage.setItem('tasks', JSON.stringify(allTasks));
-    }
-    cardsContainer = displayStoredTasksOnAdd();
-});
-
-// Path handler
-window.addEventListener('pathnamechange', () => {
-    console.log('path handler !')
-    if (location.pathname === '/tasks') {
-        main.append(errorDiv);
-        main.append(taskCreationForm);
-        displayStoredTasksOnComeInPage();
-        if (cardsContainer !== null) {
-            main.append(cardsContainer);
-            taskInfoHandler();
-        }
-    } else if ('/kanban') {
-        if (history.state.lastPage === '/tasks') {
-            main.removeChild(errorDiv);
-            main.removeChild(taskCreationForm);
-            if (cardsContainer !== null)
-                main.removeChild(cardsContainer);
-        }
-    } else {
-
-    }
-});
-
-
 // KANBAN
+let draggables = document.querySelectorAll('.draggable');
+let containers = document.querySelectorAll('.container');
+
 let kanbanContainer = document.createElement('div');
 kanbanContainer.classList.add('kanban-container');
 
@@ -321,6 +292,7 @@ const makeKanbanCardFromTask = (task) => {
 }
 
 const fillKanban = () => {
+    console.log('fillKanban()')
     if (allTasks.length > 0) {
         allTasks.forEach((task) => {
             switch (task._status) {
@@ -345,7 +317,32 @@ const fillKanban = () => {
     }
 }
 
+const displayKanbanOnPageLoad = () => {
+
+}
+
+const emptyKanban = () => {
+    let kanbanCards = document.querySelectorAll('.draggable');
+    kanbanCards.forEach((card) => {
+        switch (card.parentNode) {
+            case toPlanContainer:
+                toPlanContainer.removeChild(card);
+                break;
+            case doingContainer:
+                doingContainer.removeChild(card);
+                break;
+            case toValidateContainer:
+                toValidateContainer.removeChild(card);
+                break;
+            case doneContainer:
+                doneContainer.removeChild(card);
+                break;
+        }
+    });
+}
+
 const changeTaskStatusInStorage = (draggable, status) => {
+    console.log('changeTaskStatusInStorage')
     let task = allTasks.find((el) => {
         return el._id === parseInt(draggable.dataset.id);
     });
@@ -354,52 +351,53 @@ const changeTaskStatusInStorage = (draggable, status) => {
         localStorage.setItem('tasks', JSON.stringify(allTasks));
     }
 }
+console.log(draggables)
+const draggableListener = () => {
+    draggables = document.querySelectorAll('.draggable');
+    console.log(draggables)
+    draggables.forEach(draggable => {
+        draggable.addEventListener('dragstart', (e) => {
+            console.log('start')
+            draggable.classList.add('dragging')
+        });
 
-main.append(kanbanContainer);
-
-fillKanban();
-
-const draggables = document.querySelectorAll('.draggable');
-const containers = document.querySelectorAll('.container');
-
-draggables.forEach(draggable => {
-    draggable.addEventListener('dragstart', (e) => {
-        console.log('start')
-        draggable.classList.add('dragging')
+        draggable.addEventListener('dragend', (e) => {
+            console.log('end');
+            switch (draggable.parentNode) {
+                case toPlanContainer:
+                    changeTaskStatusInStorage(draggable, STATUS_TO_PLAN);
+                    break;
+                case doingContainer:
+                    changeTaskStatusInStorage(draggable, STATUS_DOING);
+                    break;
+                case toValidateContainer:
+                    changeTaskStatusInStorage(draggable, STATUS_TO_VALIDATE);
+                    break;
+                case doneContainer:
+                    changeTaskStatusInStorage(draggable, STATUS_DONE);
+                    break;
+            }
+            draggable.classList.remove('dragging')
+        });
     });
-
-    draggable.addEventListener('dragend', (e) => {
-        console.log('end');
-        switch (draggable.parentNode) {
-            case toPlanContainer:
-                changeTaskStatusInStorage(draggable, STATUS_TO_PLAN);
-                break;
-            case doingContainer:
-                changeTaskStatusInStorage(draggable, STATUS_DOING);
-                break;
-            case toValidateContainer:
-                changeTaskStatusInStorage(draggable, STATUS_TO_VALIDATE);
-                break;
-            case doneContainer:
-                changeTaskStatusInStorage(draggable, STATUS_DONE);
-                break;
-        }
-        draggable.classList.remove('dragging')
+}
+console.log(containers)
+const containersListener = () => {
+    containers = document.querySelectorAll('.container');
+    console.log(containers)
+    containers.forEach(container => {
+        container.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            const afterElement = getDragAfterElement(container, e.clientY);
+            const dragged = document.querySelector('.dragging');
+            if (afterElement == null) {
+                container.appendChild(dragged);
+            } else {
+                container.insertBefore(dragged, afterElement);
+            }
+        });
     });
-});
-
-containers.forEach(container => {
-    container.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        const afterElement = getDragAfterElement(container, e.clientY);
-        const dragged = document.querySelector('.dragging');
-        if (afterElement == null) {
-            container.appendChild(dragged);
-        } else {
-            container.insertBefore(dragged, afterElement);
-        }
-    });
-});
+}
 
 const getDragAfterElement = (container, y) => {
     const draggableElements = [...container.querySelectorAll('.draggable:not(.dragged)')];
@@ -412,3 +410,69 @@ const getDragAfterElement = (container, y) => {
         return closest;
     }, {offset: Number.NEGATIVE_INFINITY}).element;
 }
+
+
+// Listeners
+inputButton.addEventListener('click', (e) => {
+    taskCreationForm.dispatchEvent(new Event('submit'));
+});
+
+taskCreationForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    let messages = [];
+    const taskTitle = inputTitle.value;
+    const taskContent = inputContent.value;
+    const taskStatus = selectStatus.options[selectStatus.selectedIndex].text;
+    if (taskTitle === '' || taskTitle === null) {
+        messages.push('Title is required');
+    }
+    if (taskContent === '' || taskContent === null) {
+        messages.push('Content is required');
+    }
+    if (messages.length > 0) {
+        errorMessage.innerText = messages.join(', ');
+        errorDiv.append(errorMessage);
+    } else {
+        messages.length = 0;
+        inputTitle.value = '';
+        inputContent.value = '';
+        if (errorDiv.contains(errorMessage)) errorDiv.removeChild(errorMessage);
+        selectStatus.options.selectedIndex = 0;
+        let task = new Task(taskStatus, taskTitle, taskContent);
+        allTasks.push(task);
+        localStorage.setItem('tasks', JSON.stringify(allTasks));
+    }
+    cardsContainer = displayStoredTasksOnAdd();
+});
+
+// Path handler
+window.addEventListener('pathnamechange', () => {
+    console.log('path handler !')
+    if (location.pathname === '/tasks') {
+        if (history.state.lastPage === '/kanban') {
+            emptyKanban();
+            main.removeChild(kanbanContainer);
+        }
+        main.append(errorDiv);
+        main.append(taskCreationForm);
+        displayStoredTasksOnComeInPage();
+        if (cardsContainer !== null) {
+            main.append(cardsContainer);
+            taskInfoHandler();
+        }
+    } else if (location.pathname === '/kanban') {
+        if (history.state.lastPage === '/tasks') {
+            main.removeChild(errorDiv);
+            main.removeChild(taskCreationForm);
+            if (cardsContainer !== null)
+                main.removeChild(cardsContainer);
+        }
+        if (history.state.lastPage !== location.pathname) {
+            main.append(kanbanContainer);
+            fillKanban();
+            draggableListener();
+            containersListener();
+        }
+    } else {
+    }
+});
