@@ -436,6 +436,7 @@ const containersListener = () => {
     });
 }
 
+/*
 const touchMoveListener = () => {
     draggables = document.querySelectorAll('.draggable');
     draggables.forEach((draggable) => {
@@ -456,6 +457,7 @@ const touchMoveListener = () => {
         });
     });
 }
+*/
 
 const getDragAfterElement = (container, y) => {
     const draggableElements = [...container.querySelectorAll('.draggable:not(.dragged)')];
@@ -530,7 +532,7 @@ window.addEventListener('pathnamechange', () => {
             fillKanban();
             draggableListener();
             containersListener();
-            touchMoveListener();
+            //touchMoveListener();
         }
     } else {
     }
