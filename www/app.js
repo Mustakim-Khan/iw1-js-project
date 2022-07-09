@@ -88,6 +88,7 @@ const updateKanbanBoard = () => {
 
 
 // Tasks variables
+const VIBRATION_LENGTH = 500;
 const STATUS_TO_PLAN = 'A Planifier';
 const STATUS_DOING = 'En cours';
 const STATUS_TO_VALIDATE = 'A Valider';
@@ -398,6 +399,7 @@ const draggableListener = () => {
 
         draggable.addEventListener('dragend', (e) => {
             console.log('end');
+            navigator.vibrate(VIBRATION_LENGTH);
             switch (draggable.parentNode) {
                 case toPlanContainer:
                     changeTaskStatusInStorage(draggable, STATUS_TO_PLAN);
