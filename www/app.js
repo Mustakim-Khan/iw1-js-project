@@ -228,6 +228,16 @@ fillTasksButton.addEventListener("click", (e) => {
     console.log(t8);
 });
 
+const urlPatternIsValid = (url) => {
+    console.log('url')
+    console.log(url)
+    const pattern = new URLPattern('/tasks/:id(\\d+)', location.origin);
+    console.log('pattern.test(myLocation)')
+    console.log(pattern.test(url))
+    return pattern.test(url);
+};
+
+
 const displayStoredTasksOnComeInPage = () => {
     if (allTasks.length > 0) {
         if (cardsContainer === null) {
@@ -495,6 +505,14 @@ window.addEventListener('pathnamechange', () => {
             main.append(cardsContainer);
             taskInfoHandler();
         }
+    } else if (urlPatternIsValid(location.href)) {
+        if (main.contains(errorDiv))
+            main.removeChild(errorDiv);
+        if (main.contains(taskCreationForm))
+            main.removeChild(taskCreationForm);
+        //main.append;
+        if (main.contains(cardsContainer))
+            if (cardsContainer !== null) main.removeChild(cardsContainer);
     } else if (location.pathname === '/kanban') {
         if (history.state.lastPage === '/tasks') {
             main.removeChild(errorDiv);
