@@ -450,6 +450,7 @@ const touchMoveListener = () => {
         });
         draggable.addEventListener('touchend', () => {
             console.log('là');
+            navigator.vibrate(VIBRATION_LENGTH);
             let newX = parseInt(draggable.style.left);
             let newY = parseInt(draggable.style.top);
         });
