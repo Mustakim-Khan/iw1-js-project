@@ -67,6 +67,7 @@ input:valid {
     border: 1px solid black;
     cursor: move;
     margin-top: 0.5rem;
+    position: relative;
 }
 
 .draggable.dragging {

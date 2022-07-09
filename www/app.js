@@ -436,6 +436,26 @@ const containersListener = () => {
     });
 }
 
+const touchMoveListener = () => {
+    draggables = document.querySelectorAll('.draggable');
+    draggables.forEach((draggable) => {
+        draggable.addEventListener('touchmove', (e) => {
+            console.log('ici');
+            let touchLocation = e.targetTouches[0];
+            draggable.style.left = touchLocation.pageX + 'px';
+            draggable.style.top = touchLocation.pageY + 'px';
+            console.log(draggable.style.left)
+            console.log(draggable.style.top)
+            //draggable.dispatchEvent(new Event('dragstart'))
+        });
+        draggable.addEventListener('touchend', () => {
+            console.log('là');
+            let newX = parseInt(draggable.style.left);
+            let newY = parseInt(draggable.style.top);
+        });
+    });
+}
+
 const getDragAfterElement = (container, y) => {
     const draggableElements = [...container.querySelectorAll('.draggable:not(.dragged)')];
     return draggableElements.reduce((closest, child) => {
@@ -509,6 +529,7 @@ window.addEventListener('pathnamechange', () => {
             fillKanban();
             draggableListener();
             containersListener();
+            touchMoveListener();
         }
     } else {
     }
