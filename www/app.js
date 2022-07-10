@@ -194,6 +194,7 @@ taskCreationForm.append(selectStatus);
 taskCreationForm.append(inputContent);
 taskCreationForm.append(inputButton);
 
+
 const fillCardsContainer = (container) => {
     allTasks.forEach((task) => {
         if (task._status === STATUS_TO_PLAN) {
@@ -229,11 +230,7 @@ fillTasksButton.addEventListener("click", (e) => {
 });
 
 const urlPatternIsValid = (url) => {
-    console.log('url')
-    console.log(url)
     const pattern = new URLPattern('/tasks/:id(\\d+)', location.origin);
-    console.log('pattern.test(myLocation)')
-    console.log(pattern.test(url))
     return pattern.test(url);
 };
 
@@ -279,10 +276,45 @@ const taskInfoHandler = () => {
                 `/tasks/${card.dataset.id}`
             );
             window.dispatchEvent(new Event('pathnamechange'));
-            console.log(card.dataset.id);
         });
     });
 }
+
+// Task INFO => variables
+
+let taskInfoContainer = document.createElement('div');
+taskInfoContainer.classList.add('tasksInfo-container');
+taskInfoContainer.setAttribute('id', 'taskInfoContainer');
+/*let taskInfoForm = document.createElement('form');
+taskInfoForm.setAttribute('method', 'post');
+taskInfoForm.setAttribute('action', '');
+let taskInfoTitle = document.createElement('input');
+let taskInfoStatus = document.createElement('select');
+let taskInfoContent = document.createElement('input');
+taskInfoTitle.setAttribute('type', 'text');
+taskInfoTitle.setAttribute('name', 'titleInput');
+taskInfoTitle.setAttribute('value', '');
+taskInfoContent.setAttribute('type', 'text');
+taskInfoContent.setAttribute('name', 'titleInput');
+taskInfoContent.setAttribute('value', '');
+
+taskInfoForm.append(taskInfoTitle);
+taskInfoForm.append(taskInfoStatus);
+taskInfoForm.append(taskInfoContent);
+taskInfoContainer.append(taskInfoForm);*/
+//taskInfoContainer.append(errorDiv);
+//taskInfoContainer.append(taskCreationForm);
+
+const fillTaskInfoForm = (task) => {
+    console.log(task);
+    taskInfoContainer.append(errorDiv);
+    taskInfoContainer.append(taskCreationForm);
+    /*
+      taskInfoTitle.setAttribute('value', task._title);
+      taskInfoContent.setAttribute('value', task._content);*/
+    //taskInfoStatus.setAttribute('value', task._status);
+}
+
 
 // KANBAN
 let draggables = document.querySelectorAll('.draggable');
@@ -506,13 +538,24 @@ window.addEventListener('pathnamechange', () => {
             taskInfoHandler();
         }
     } else if (urlPatternIsValid(location.href)) {
+        let taskWithParamId = allTasks.find((el) => {
+            return el._id === parseInt(history.state.cardId);
+        });
+        /*      console.log('history.state.cardId');
+                console.log(parseInt(history.state.cardId));*/
         if (main.contains(errorDiv))
             main.removeChild(errorDiv);
         if (main.contains(taskCreationForm))
             main.removeChild(taskCreationForm);
         //main.append;
-        if (main.contains(cardsContainer))
+        if (main.contains(cardsContainer)) {
             if (cardsContainer !== null) main.removeChild(cardsContainer);
+        }
+        console.log(taskInfoContainer)
+        main.append(taskInfoContainer);
+        fillTaskInfoForm(taskWithParamId);
+        // display form card id
+        // appel à une fonction display avec 'taskWithParamId'
     } else if (location.pathname === '/kanban') {
         if (history.state.lastPage === '/tasks') {
             main.removeChild(errorDiv);
