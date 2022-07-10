@@ -97,6 +97,7 @@ let allTasks = (localStorage.getItem('tasks') ? JSON.parse(localStorage.getItem(
 
 // Kanban variables
 let kanbanBoard = (localStorage.getItem('kanban') ? JSON.parse(localStorage.getItem('kanban')) : new Kanban());
+let currentTaskInfo = undefined;
 
 class Task {
     constructor(status, title, content) {
@@ -179,15 +180,15 @@ optionDoing.value = STATUS_DOING;
 optionDoing.text = STATUS_DOING;
 selectStatus.append(optionDoing);
 
-let optionDone = document.createElement('option');
-optionDone.value = STATUS_DONE;
-optionDone.text = STATUS_DONE;
-selectStatus.append(optionDone);
-
 let optionToValidate = document.createElement('option');
 optionToValidate.value = STATUS_TO_VALIDATE;
 optionToValidate.text = STATUS_TO_VALIDATE;
 selectStatus.append(optionToValidate);
+
+let optionDone = document.createElement('option');
+optionDone.value = STATUS_DONE;
+optionDone.text = STATUS_DONE;
+selectStatus.append(optionDone);
 
 taskCreationForm.append(inputTitle);
 taskCreationForm.append(selectStatus);
@@ -283,37 +284,157 @@ const taskInfoHandler = () => {
 // Task INFO => variables
 
 let taskInfoContainer = document.createElement('div');
-taskInfoContainer.classList.add('tasksInfo-container');
-taskInfoContainer.setAttribute('id', 'taskInfoContainer');
-/*let taskInfoForm = document.createElement('form');
+//taskInfoContainer.classList.add('tasksInfo-container');
+//taskInfoContainer.setAttribute('id', 'taskInfoContainer');
+
+
+
+let taskInfoForm = document.createElement('form');
 taskInfoForm.setAttribute('method', 'post');
 taskInfoForm.setAttribute('action', '');
 let taskInfoTitle = document.createElement('input');
 let taskInfoStatus = document.createElement('select');
 let taskInfoContent = document.createElement('input');
+let taskInfoInputButton = document.createElement('input');
 taskInfoTitle.setAttribute('type', 'text');
 taskInfoTitle.setAttribute('name', 'titleInput');
-taskInfoTitle.setAttribute('value', '');
 taskInfoContent.setAttribute('type', 'text');
 taskInfoContent.setAttribute('name', 'titleInput');
-taskInfoContent.setAttribute('value', '');
+taskInfoInputButton.setAttribute('type', 'button');
+taskInfoInputButton.setAttribute('value', 'Modifier');
+let taskInfoErrorDiv = document.createElement('div');
+let taskInfoErrorMessage = document.createElement('p');
+taskInfoErrorDiv.append(taskInfoErrorMessage);
+
+taskInfoInputButton.addEventListener('click', (e) => {
+    taskInfoForm.dispatchEvent(new Event('submit'));
+});
+/*
+taskCreationForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    let messages = [];
+    const taskTitle = inputTitle.value;
+    const taskContent = inputContent.value;
+    const taskStatus = selectStatus.options[selectStatus.selectedIndex].text;
+    if (taskTitle === '' || taskTitle === null) {
+        messages.push('Title is required');
+    }
+    if (taskContent === '' || taskContent === null) {
+        messages.push('Content is required');
+    }
+    if (messages.length > 0) {
+        errorMessage.innerText = messages.join(', ');
+        errorDiv.append(errorMessage);
+    } else {
+        messages.length = 0;
+        inputTitle.value = '';
+        inputContent.value = '';
+        if (errorDiv.contains(errorMessage)) errorDiv.removeChild(errorMessage);
+        selectStatus.options.selectedIndex = 0;
+        let task = new Task(taskStatus, taskTitle, taskContent);
+        allTasks.push(task);
+        localStorage.setItem('tasks', JSON.stringify(allTasks));
+    }
+    cardsContainer = displayStoredTasksOnAdd();
+});
+*/
+taskInfoForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    let messages = [];
+    const infoTitle = taskInfoTitle.value;
+    const infoContent = taskInfoContent.value;
+    const taskStatus = taskInfoStatus.options[taskInfoStatus.selectedIndex].text;
+
+    if (infoTitle === '' || infoTitle === null) {
+        messages.push('Le titre est requis');
+    }
+    if (infoContent === '' || infoContent === null) {
+        messages.push('Le contenu est requis');
+    }
+    if (messages.length > 0) {
+        taskInfoErrorMessage.innerText = messages.join(', ');
+        taskInfoErrorDiv.append(taskInfoErrorMessage);
+    } else {
+        messages.length = 0;
+        taskInfoTitle.value = '';
+        taskInfoContent.value = '';
+        if (taskInfoErrorDiv.contains(taskInfoErrorMessage)) taskInfoErrorDiv.removeChild(taskInfoErrorMessage);
+        taskInfoStatus.options.selectedIndex = 0;
+        //let task = new Task(taskStatus, taskTitle, taskContent);
+        // allTasks.push(task);
+        currentTaskInfo._title = infoTitle;
+        currentTaskInfo._content = infoContent;
+        currentTaskInfo._status = taskStatus;
+        currentTaskInfo = undefined;
+        localStorage.setItem('tasks', JSON.stringify(allTasks));
+    }
+    console.log(location.pathname)
+    history.pushState(
+        {
+            lastPage: '/tasks/id',
+        },
+        null,
+        "/tasks"
+    );
+    window.dispatchEvent(new Event('pathnamechange'));
+});
+
+
+
+let optionToPlanOnTaskInfoForm = document.createElement('option');
+optionToPlanOnTaskInfoForm.value = STATUS_TO_PLAN;
+optionToPlanOnTaskInfoForm.text = STATUS_TO_PLAN;
+taskInfoStatus.append(optionToPlanOnTaskInfoForm);
+
+let optionDoingOnTaskInfoForm = document.createElement('option');
+optionDoingOnTaskInfoForm.value = STATUS_DOING;
+optionDoingOnTaskInfoForm.text = STATUS_DOING;
+taskInfoStatus.append(optionDoingOnTaskInfoForm);
+
+let optionToValidateOnTaskInfoForm = document.createElement('option');
+optionToValidateOnTaskInfoForm.value = STATUS_TO_VALIDATE;
+optionToValidateOnTaskInfoForm.text = STATUS_TO_VALIDATE;
+taskInfoStatus.append(optionToValidateOnTaskInfoForm);
+
+let optionDoneOnTaskInfoForm = document.createElement('option');
+optionDoneOnTaskInfoForm.value = STATUS_DONE;
+optionDoneOnTaskInfoForm.text = STATUS_DONE;
+taskInfoStatus.append(optionDoneOnTaskInfoForm);
+
 
 taskInfoForm.append(taskInfoTitle);
 taskInfoForm.append(taskInfoStatus);
 taskInfoForm.append(taskInfoContent);
-taskInfoContainer.append(taskInfoForm);*/
+taskInfoForm.append(taskInfoInputButton)
+taskInfoContainer.append(taskInfoForm);
+
 //taskInfoContainer.append(errorDiv);
 //taskInfoContainer.append(taskCreationForm);
 
-const fillTaskInfoForm = (task) => {
-    console.log(task);
-    taskInfoContainer.append(errorDiv);
-    taskInfoContainer.append(taskCreationForm);
+const fillTaskInfoForm = () => {
+    taskInfoTitle.setAttribute('value', currentTaskInfo._title);
+    taskInfoContent.setAttribute('value', currentTaskInfo._content);
+    taskInfoContent.setAttribute('required', 'required');
+    taskInfoTitle.setAttribute('required', 'required');
+
+
     /*
-      taskInfoTitle.setAttribute('value', task._title);
-      taskInfoContent.setAttribute('value', task._content);*/
-    //taskInfoStatus.setAttribute('value', task._status);
+        console.log(allTasks);
+        task._title = 'TEST'
+        console.log(allTasks);
+        localStorage.setItem('tasks', JSON.stringify(allTasks));
+    */
+    selectStatus.selectedIndex = 0;
+
+    /*
+      taskInfoTitle.setAttribute('value', currentTaskInfo._title);
+      taskInfoContent.setAttribute('value', currentTaskInfo._content);*/
+    //taskInfoStatus.setAttribute('value', currentTaskInfo._status);
 }
+
+
+
+
 
 
 // KANBAN
@@ -529,6 +650,8 @@ window.addEventListener('pathnamechange', () => {
         if (history.state.lastPage === '/kanban') {
             emptyKanban();
             main.removeChild(kanbanContainer);
+        } else if (history.state.lastPage === '/tasks/id') {
+            main.removeChild(taskInfoContainer);
         }
         main.append(errorDiv);
         main.append(taskCreationForm);
@@ -537,8 +660,10 @@ window.addEventListener('pathnamechange', () => {
             main.append(cardsContainer);
             taskInfoHandler();
         }
+        if(main.contains(taskInfoContainer))
+            main.removeChild(taskInfoContainer);
     } else if (urlPatternIsValid(location.href)) {
-        let taskWithParamId = allTasks.find((el) => {
+        currentTaskInfo = allTasks.find((el) => {
             return el._id === parseInt(history.state.cardId);
         });
         /*      console.log('history.state.cardId');
@@ -547,13 +672,14 @@ window.addEventListener('pathnamechange', () => {
             main.removeChild(errorDiv);
         if (main.contains(taskCreationForm))
             main.removeChild(taskCreationForm);
+
         //main.append;
         if (main.contains(cardsContainer)) {
             if (cardsContainer !== null) main.removeChild(cardsContainer);
         }
         console.log(taskInfoContainer)
         main.append(taskInfoContainer);
-        fillTaskInfoForm(taskWithParamId);
+        fillTaskInfoForm();
         // display form card id
         // appel à une fonction display avec 'taskWithParamId'
     } else if (location.pathname === '/kanban') {
