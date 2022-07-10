@@ -284,7 +284,7 @@ const taskInfoHandler = () => {
 // Task INFO => variables
 
 let taskInfoContainer = document.createElement('div');
-//taskInfoContainer.classList.add('tasksInfo-container');
+taskInfoContainer.classList.add('tasks-info-container');
 //taskInfoContainer.setAttribute('id', 'taskInfoContainer');
 
 
@@ -292,6 +292,7 @@ let taskInfoContainer = document.createElement('div');
 let taskInfoForm = document.createElement('form');
 taskInfoForm.setAttribute('method', 'post');
 taskInfoForm.setAttribute('action', '');
+taskInfoForm.classList.add('tasks-info-container');
 let taskInfoTitle = document.createElement('input');
 let taskInfoStatus = document.createElement('select');
 let taskInfoContent = document.createElement('input');
@@ -306,38 +307,51 @@ let taskInfoErrorDiv = document.createElement('div');
 let taskInfoErrorMessage = document.createElement('p');
 taskInfoErrorDiv.append(taskInfoErrorMessage);
 
+let taskInfoTitleLabel = document.createElement('label');
+let taskInfoContentLabel = document.createElement('label');
+let taskInfoStatusLabel = document.createElement('label');
+taskInfoTitleLabel.innerText = 'Title : ';
+taskInfoContentLabel.innerText = 'Content : ';
+taskInfoStatusLabel.innerText = 'Status : ';
+taskInfoTitleLabel.append(taskInfoTitle);
+taskInfoContentLabel.append(taskInfoContent);
+taskInfoStatusLabel.append(taskInfoStatus);
+
+let optionToPlanOnTaskInfoForm = document.createElement('option');
+optionToPlanOnTaskInfoForm.value = STATUS_TO_PLAN;
+optionToPlanOnTaskInfoForm.text = STATUS_TO_PLAN;
+taskInfoStatus.append(optionToPlanOnTaskInfoForm);
+
+let optionDoingOnTaskInfoForm = document.createElement('option');
+optionDoingOnTaskInfoForm.value = STATUS_DOING;
+optionDoingOnTaskInfoForm.text = STATUS_DOING;
+taskInfoStatus.append(optionDoingOnTaskInfoForm);
+
+let optionToValidateOnTaskInfoForm = document.createElement('option');
+optionToValidateOnTaskInfoForm.value = STATUS_TO_VALIDATE;
+optionToValidateOnTaskInfoForm.text = STATUS_TO_VALIDATE;
+taskInfoStatus.append(optionToValidateOnTaskInfoForm);
+
+let optionDoneOnTaskInfoForm = document.createElement('option');
+optionDoneOnTaskInfoForm.value = STATUS_DONE;
+optionDoneOnTaskInfoForm.text = STATUS_DONE;
+taskInfoStatus.append(optionDoneOnTaskInfoForm);
+
+
+/*taskInfoForm.append(taskInfoTitle);
+taskInfoForm.append(taskInfoStatus);
+taskInfoForm.append(taskInfoContent);*/
+taskInfoForm.append(taskInfoTitleLabel);
+taskInfoForm.append(taskInfoContentLabel);
+taskInfoForm.append(taskInfoStatusLabel);
+
+taskInfoForm.append(taskInfoInputButton)
+taskInfoContainer.append(taskInfoForm);
+
 taskInfoInputButton.addEventListener('click', (e) => {
     taskInfoForm.dispatchEvent(new Event('submit'));
 });
-/*
-taskCreationForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    let messages = [];
-    const taskTitle = inputTitle.value;
-    const taskContent = inputContent.value;
-    const taskStatus = selectStatus.options[selectStatus.selectedIndex].text;
-    if (taskTitle === '' || taskTitle === null) {
-        messages.push('Title is required');
-    }
-    if (taskContent === '' || taskContent === null) {
-        messages.push('Content is required');
-    }
-    if (messages.length > 0) {
-        errorMessage.innerText = messages.join(', ');
-        errorDiv.append(errorMessage);
-    } else {
-        messages.length = 0;
-        inputTitle.value = '';
-        inputContent.value = '';
-        if (errorDiv.contains(errorMessage)) errorDiv.removeChild(errorMessage);
-        selectStatus.options.selectedIndex = 0;
-        let task = new Task(taskStatus, taskTitle, taskContent);
-        allTasks.push(task);
-        localStorage.setItem('tasks', JSON.stringify(allTasks));
-    }
-    cardsContainer = displayStoredTasksOnAdd();
-});
-*/
+
 taskInfoForm.addEventListener('submit', (e) => {
     e.preventDefault();
     let messages = [];
@@ -378,35 +392,6 @@ taskInfoForm.addEventListener('submit', (e) => {
     );
     window.dispatchEvent(new Event('pathnamechange'));
 });
-
-
-
-let optionToPlanOnTaskInfoForm = document.createElement('option');
-optionToPlanOnTaskInfoForm.value = STATUS_TO_PLAN;
-optionToPlanOnTaskInfoForm.text = STATUS_TO_PLAN;
-taskInfoStatus.append(optionToPlanOnTaskInfoForm);
-
-let optionDoingOnTaskInfoForm = document.createElement('option');
-optionDoingOnTaskInfoForm.value = STATUS_DOING;
-optionDoingOnTaskInfoForm.text = STATUS_DOING;
-taskInfoStatus.append(optionDoingOnTaskInfoForm);
-
-let optionToValidateOnTaskInfoForm = document.createElement('option');
-optionToValidateOnTaskInfoForm.value = STATUS_TO_VALIDATE;
-optionToValidateOnTaskInfoForm.text = STATUS_TO_VALIDATE;
-taskInfoStatus.append(optionToValidateOnTaskInfoForm);
-
-let optionDoneOnTaskInfoForm = document.createElement('option');
-optionDoneOnTaskInfoForm.value = STATUS_DONE;
-optionDoneOnTaskInfoForm.text = STATUS_DONE;
-taskInfoStatus.append(optionDoneOnTaskInfoForm);
-
-
-taskInfoForm.append(taskInfoTitle);
-taskInfoForm.append(taskInfoStatus);
-taskInfoForm.append(taskInfoContent);
-taskInfoForm.append(taskInfoInputButton)
-taskInfoContainer.append(taskInfoForm);
 
 //taskInfoContainer.append(errorDiv);
 //taskInfoContainer.append(taskCreationForm);
