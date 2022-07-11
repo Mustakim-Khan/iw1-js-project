@@ -329,10 +329,6 @@ optionDoneOnTaskInfoForm.value = STATUS_DONE;
 optionDoneOnTaskInfoForm.text = STATUS_DONE;
 taskInfoStatus.append(optionDoneOnTaskInfoForm);
 
-
-/*taskInfoForm.append(taskInfoTitle);
-taskInfoForm.append(taskInfoStatus);
-taskInfoForm.append(taskInfoContent);*/
 taskInfoForm.append(taskInfoTitleLabel);
 taskInfoForm.append(taskInfoContentLabel);
 taskInfoForm.append(taskInfoStatusLabel);
@@ -382,18 +378,12 @@ taskInfoForm.addEventListener('submit', (e) => {
     window.dispatchEvent(new Event('pathnamechange'));
 });
 
-//taskInfoContainer.append(errorDiv);
-//taskInfoContainer.append(taskCreationForm);
-
 const fillTaskInfoForm = () => {
     taskInfoTitle.setAttribute('value', currentTaskInfo._title);
     taskInfoContent.setAttribute('value', currentTaskInfo._content);
     taskInfoContent.setAttribute('required', 'required');
     taskInfoTitle.setAttribute('required', 'required');
-    selectStatus.selectedIndex = 0;
-    console.log(currentTaskInfo)
-    console.log(taskInfoTitle)
-    console.log(taskInfoContent)
+    taskInfoStatus.selectedIndex = 0;
 }
 
 
