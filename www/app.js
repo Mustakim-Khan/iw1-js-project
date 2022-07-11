@@ -33,7 +33,7 @@ class Kanban {
         this.toValidateTasks = [];
         this.doneTasks = [];
 
-        if (allTasks.length > 0) {
+/*        if (allTasks.length > 0) {
             allTasks.forEach((task) => {
                 switch (task._status) {
                     case STATUS_TO_PLAN:
@@ -50,7 +50,7 @@ class Kanban {
                         break;
                 }
             });
-        }
+        }*/
         localStorage.setItem('kanban', JSON.stringify(this));
     }
 }
