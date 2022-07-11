@@ -256,6 +256,11 @@ const fillCardsContainer = (container) => {
 //     console.log(t8);
 // });
 
+const urlPatternIsValid = (url) => {
+    const pattern = new URLPattern('/tasks/:id(\\d+)', location.origin);
+    return pattern.test(url);
+};
+
 const displayStoredTasksOnComeInPage = () => {
     if (allTasks.length > 0) {
         if (cardsContainer === null) {
@@ -900,12 +905,12 @@ membersCreationForm.addEventListener('submit', (e) => {
     e.preventDefault();
     let messages = [];
     // Retreive inputs values
-    InputFirstNameValue = formSubmitIsValid(messages,membersInputFirstName);
-    InputLastNameValue = formSubmitIsValid(messages,membersInputLastName);
-    membersInputEmailValue = formSubmitIsValid(messages,membersInputEmail);
-    membersInputOccupationValue = formSubmitIsValid(messages,membersInputOccupation);
-    membersSelectTaskValue = membersSelectTask.selectedOptions
-    collectionTaskId = []
+    let InputFirstNameValue = formSubmitIsValid(messages,membersInputFirstName);
+    let InputLastNameValue = formSubmitIsValid(messages,membersInputLastName);
+    let membersInputEmailValue = formSubmitIsValid(messages,membersInputEmail);
+    let membersInputOccupationValue = formSubmitIsValid(messages,membersInputOccupation);
+    let membersSelectTaskValue = membersSelectTask.selectedOptions
+    let collectionTaskId = []
     for(let i=0; i<membersSelectTaskValue.length; i++){
         collectionTaskId.push(membersSelectTaskValue[i].value)
     }
@@ -927,6 +932,6 @@ membersCreationForm.addEventListener('submit', (e) => {
         allMembers.push(member);
         localStorage.setItem('members', JSON.stringify(allMembers));
     }
-    membersCardsContainer = displayMembersStored();
+    membersCardContainer = displayMembersStored();
 });
 
