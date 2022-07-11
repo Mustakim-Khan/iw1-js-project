@@ -84,3 +84,8 @@ input:valid {
 .container-title {
     border-bottom: 2px solid black;
 }
+
+.tasks-info-container {
+    display: flex;
+    flex-direction: column;
+}

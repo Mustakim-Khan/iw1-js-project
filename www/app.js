@@ -52,7 +52,7 @@ class Kanban {
         this.toValidateTasks = [];
         this.doneTasks = [];
 
-        if (allTasks.length > 0) {
+/*        if (allTasks.length > 0) {
             allTasks.forEach((task) => {
                 switch (task._status) {
                     case STATUS_TO_PLAN:
@@ -69,7 +69,7 @@ class Kanban {
                         break;
                 }
             });
-        }
+        }*/
         localStorage.setItem('kanban', JSON.stringify(this));
     }
 }
@@ -113,6 +113,7 @@ let allTasks = (localStorage.getItem('tasks') ? JSON.parse(localStorage.getItem(
 
 // Kanban variables
 let kanbanBoard = (localStorage.getItem('kanban') ? JSON.parse(localStorage.getItem('kanban')) : new Kanban());
+let currentTaskInfo = undefined;
 
 class Task {
     constructor(status, title, content) {
@@ -156,8 +157,7 @@ class Task {
 // -- tasks page
 // Task card
 let cardsContainer = document.getElementById('cards-container');
-// Does use !
-// const fillTasksButton = document.getElementById("fillTasksButton");
+const fillTasksButton = document.getElementById("fillTasksButton");
 
 // Error div
 let errorDiv = document.createElement('div');
@@ -204,17 +204,16 @@ optionDoing.value = STATUS_DOING;
 optionDoing.text = STATUS_DOING;
 selectStatus.append(optionDoing);
 
-let optionDone = document.createElement('option'); // STATUS : DONE
-optionDone.value = STATUS_DONE;
-optionDone.text = STATUS_DONE;
-selectStatus.append(optionDone);
-
-let optionToValidate = document.createElement('option'); // STATUS : VALIDATE
+let optionToValidate = document.createElement('option');
 optionToValidate.value = STATUS_TO_VALIDATE;
 optionToValidate.text = STATUS_TO_VALIDATE;
 selectStatus.append(optionToValidate);
 
-// Add conponent in task form.
+let optionDone = document.createElement('option');
+optionDone.value = STATUS_DONE;
+optionDone.text = STATUS_DONE;
+selectStatus.append(optionDone);
+
 taskCreationForm.append(inputTitle);
 taskCreationForm.append(selectStatus);
 taskCreationForm.append(inputContent);
@@ -226,7 +225,7 @@ taskCreationForm.append(inputButton);
 const fillCardsContainer = (container) => {
     allTasks.forEach((task) => {
         if (task._status === STATUS_TO_PLAN) {
-            let card = document.createElement('div');   
+            let card = document.createElement('div');
             card.setAttribute('data-id', task._id);
             card.setAttribute('class', 'card');
             let p = document.createElement('p');
@@ -299,9 +298,121 @@ const taskInfoHandler = () => {
                 `/tasks/${card.dataset.id}`
             );
             window.dispatchEvent(new Event('pathnamechange'));
-            console.log(card.dataset.id);
         });
     });
+}
+
+// Task INFO => variables
+
+let taskInfoContainer = document.createElement('div');
+taskInfoContainer.classList.add('tasks-info-container');
+//taskInfoContainer.setAttribute('id', 'taskInfoContainer');
+
+
+
+let taskInfoForm = document.createElement('form');
+taskInfoForm.setAttribute('method', 'post');
+taskInfoForm.setAttribute('action', '');
+taskInfoForm.classList.add('tasks-info-container');
+let taskInfoTitle = document.createElement('input');
+let taskInfoStatus = document.createElement('select');
+let taskInfoContent = document.createElement('input');
+let taskInfoInputButton = document.createElement('input');
+taskInfoTitle.setAttribute('type', 'text');
+taskInfoTitle.setAttribute('name', 'titleInput');
+taskInfoContent.setAttribute('type', 'text');
+taskInfoContent.setAttribute('name', 'titleInput');
+taskInfoInputButton.setAttribute('type', 'button');
+taskInfoInputButton.setAttribute('value', 'Modifier');
+let taskInfoErrorDiv = document.createElement('div');
+let taskInfoErrorMessage = document.createElement('p');
+taskInfoErrorDiv.append(taskInfoErrorMessage);
+
+let taskInfoTitleLabel = document.createElement('label');
+let taskInfoContentLabel = document.createElement('label');
+let taskInfoStatusLabel = document.createElement('label');
+taskInfoTitleLabel.innerText = 'Title : ';
+taskInfoContentLabel.innerText = 'Content : ';
+taskInfoStatusLabel.innerText = 'Status : ';
+taskInfoTitleLabel.append(taskInfoTitle);
+taskInfoContentLabel.append(taskInfoContent);
+taskInfoStatusLabel.append(taskInfoStatus);
+
+let optionToPlanOnTaskInfoForm = document.createElement('option');
+optionToPlanOnTaskInfoForm.value = STATUS_TO_PLAN;
+optionToPlanOnTaskInfoForm.text = STATUS_TO_PLAN;
+taskInfoStatus.append(optionToPlanOnTaskInfoForm);
+
+let optionDoingOnTaskInfoForm = document.createElement('option');
+optionDoingOnTaskInfoForm.value = STATUS_DOING;
+optionDoingOnTaskInfoForm.text = STATUS_DOING;
+taskInfoStatus.append(optionDoingOnTaskInfoForm);
+
+let optionToValidateOnTaskInfoForm = document.createElement('option');
+optionToValidateOnTaskInfoForm.value = STATUS_TO_VALIDATE;
+optionToValidateOnTaskInfoForm.text = STATUS_TO_VALIDATE;
+taskInfoStatus.append(optionToValidateOnTaskInfoForm);
+
+let optionDoneOnTaskInfoForm = document.createElement('option');
+optionDoneOnTaskInfoForm.value = STATUS_DONE;
+optionDoneOnTaskInfoForm.text = STATUS_DONE;
+taskInfoStatus.append(optionDoneOnTaskInfoForm);
+
+taskInfoForm.append(taskInfoTitleLabel);
+taskInfoForm.append(taskInfoContentLabel);
+taskInfoForm.append(taskInfoStatusLabel);
+
+taskInfoForm.append(taskInfoInputButton)
+taskInfoContainer.append(taskInfoForm);
+
+taskInfoInputButton.addEventListener('click', (e) => {
+    taskInfoForm.dispatchEvent(new Event('submit'));
+});
+
+taskInfoForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    let messages = [];
+    const infoTitle = taskInfoTitle.value;
+    const infoContent = taskInfoContent.value;
+    const taskStatus = taskInfoStatus.options[taskInfoStatus.selectedIndex].text;
+
+    if (infoTitle === '' || infoTitle === null) {
+        messages.push('Le titre est requis');
+    }
+    if (infoContent === '' || infoContent === null) {
+        messages.push('Le contenu est requis');
+    }
+    if (messages.length > 0) {
+        taskInfoErrorMessage.innerText = messages.join(', ');
+        taskInfoErrorDiv.append(taskInfoErrorMessage);
+    } else {
+        messages.length = 0;
+        if (taskInfoErrorDiv.contains(taskInfoErrorMessage)) taskInfoErrorDiv.removeChild(taskInfoErrorMessage);
+        taskInfoStatus.options.selectedIndex = 0;
+        //let task = new Task(taskStatus, taskTitle, taskContent);
+        // allTasks.push(task);
+        currentTaskInfo._title = infoTitle;
+        currentTaskInfo._content = infoContent;
+        currentTaskInfo._status = taskStatus;
+        currentTaskInfo = undefined;
+        localStorage.setItem('tasks', JSON.stringify(allTasks));
+    }
+    history.pushState(
+        {
+            lastPage: '/tasks/id',
+        },
+        null,
+        "/tasks"
+    );
+    window.dispatchEvent(new Event('pathnamechange'));
+});
+
+const fillTaskInfoForm = () => {
+    taskInfoTitle.setAttribute('value', currentTaskInfo._title);
+    taskInfoContent.setAttribute('value', currentTaskInfo._content);
+    taskInfoContent.setAttribute('required', 'required');
+    taskInfoTitle.setAttribute('required', 'required');
+    taskInfoStatus.selectedIndex = 0;
 }
 
 // KANBAN
@@ -405,7 +516,6 @@ const emptyKanban = () => {
     });
 }
 
-// 
 const changeTaskStatusInStorage = (draggable, status) => {
     console.log('changeTaskStatusInStorage')
     let task = allTasks.find((el) => {
@@ -479,7 +589,7 @@ const getDragAfterElement = (container, y) => {
 }
 
 
-// Create task Listeners
+// Listeners
 inputButton.addEventListener('click', (e) => {
     taskCreationForm.dispatchEvent(new Event('submit'));
 });
@@ -512,13 +622,15 @@ taskCreationForm.addEventListener('submit', (e) => {
     cardsContainer = displayStoredTasksOnAdd();
 });
 
-// GLOBAL Path handler
+// Path handler
 window.addEventListener('pathnamechange', () => {
-    console.log('path handler !')
+    console.log('path handler : pathname : ' + location.pathname)
     if (location.pathname === '/tasks') {
         if (history.state.lastPage === '/kanban') {
             emptyKanban();
             main.removeChild(kanbanContainer);
+        } else if (history.state.lastPage === '/tasks/id') {
+            main.removeChild(taskInfoContainer);
         }else if(history.state.lastPage === '/members'){
             main.removeChild(membersErrorDiv);
             main.removeChild(membersCreationForm);
@@ -526,12 +638,30 @@ window.addEventListener('pathnamechange', () => {
         }
         main.append(errorDiv);
         main.append(taskCreationForm);
-        // Check in localStorage for task
         displayStoredTasksOnComeInPage();
         if (cardsContainer !== null) {
             main.append(cardsContainer);
             taskInfoHandler();
         }
+        if(main.contains(taskInfoContainer))
+            main.removeChild(taskInfoContainer);
+    } else if (urlPatternIsValid(location.href)) {
+        currentTaskInfo = allTasks.find((el) => {
+            return el._id === parseInt(history.state.cardId);
+        });
+        if (main.contains(errorDiv))
+            main.removeChild(errorDiv);
+        if (main.contains(taskCreationForm))
+            main.removeChild(taskCreationForm);
+
+        //main.append;
+        if (main.contains(cardsContainer)) {
+            if (cardsContainer !== null) main.removeChild(cardsContainer);
+        }
+        main.append(taskInfoContainer);
+        fillTaskInfoForm();
+        // display form card id
+        // appel à une fonction display avec 'taskWithParamId'
     } else if (location.pathname === '/kanban') {
         if (history.state.lastPage === '/tasks') {
             main.removeChild(errorDiv);
@@ -564,7 +694,7 @@ window.addEventListener('pathnamechange', () => {
         main.append(membersErrorDiv);
         main.append(membersCreationForm);
         displayMembersStored()
-    } 
+    }
 });
 
 
@@ -665,7 +795,7 @@ const formSubmitIsValid = (errorsArray,input) => {
 const fillMembersCardsContainer = (container) => {
     allMembers.forEach((member) => {
         // if (task._status === STATUS_TO_PLAN) {
-            let card = document.createElement('div');   
+            let card = document.createElement('div');
             card.setAttribute('data-id', member._id);
             card.setAttribute('class', 'card');
             let p = document.createElement('p');
@@ -779,7 +909,7 @@ membersCreationForm.addEventListener('submit', (e) => {
     for(let i=0; i<membersSelectTaskValue.length; i++){
         collectionTaskId.push(membersSelectTaskValue[i].value)
     }
-    
+
     if (messages.length > 0) {
         membersErrorMessage.innerText = messages.join(', ');
         membersErrorDiv.append(membersErrorMessage);
