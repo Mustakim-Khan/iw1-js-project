@@ -23,9 +23,13 @@ kanban.addEventListener("click", () => {
 });
 
 task.addEventListener("click", () => {
+    let supposedLastPage = location.pathname;
+    if (urlPatternIsValid(location.href)) {
+        supposedLastPage = '/tasks/id';
+    }
     history.pushState(
         {
-            lastPage: location.pathname,
+            lastPage: supposedLastPage,
         },
         null,
         "/tasks"
@@ -137,7 +141,11 @@ class Task {
 
 // -- tasks page
 // Task card
-let cardsContainer = document.getElementById('cards-container');
+let tasksPageContainer = document.createElement('div');
+tasksPageContainer.setAttribute('class', 'tasks-page-container');
+
+//let cardsContainer = document.getElementById('cards-container');
+let cardsContainer = undefined;
 
 // Error div
 let errorDiv = document.createElement('div');
@@ -199,9 +207,10 @@ taskCreationForm.append(selectStatus);
 taskCreationForm.append(inputContent);
 taskCreationForm.append(inputButton);
 
-// --- tasks page --- end
+tasksPageContainer.append(errorDiv);
+tasksPageContainer.append(taskCreationForm);
 
-// --- Kanban : Fill container given with all tasks that have STATUS_TO_PLAN as status.
+
 const fillCardsContainer = (container) => {
     allTasks.forEach((task) => {
         if (task._status === STATUS_TO_PLAN) {
@@ -223,30 +232,37 @@ const urlPatternIsValid = (url) => {
 };
 
 const displayStoredTasksOnComeInPage = () => {
+    console.log('displayStoredTasksOnComeInPage')
     if (allTasks.length > 0) {
-        if (cardsContainer === null) {
+        if (!cardsContainer) {
+            console.log('cardsContainer')
             cardsContainer = document.createElement('div');
             cardsContainer.setAttribute('id', 'cards-container');
             fillCardsContainer(cardsContainer);
-            main.append(cardsContainer);
+            tasksPageContainer.append(cardsContainer);
             return cardsContainer;
         }
     }
 }
 
 const displayStoredTasksOnAdd = () => {
+    console.log('displayStoredTasksOnAdd')
     if (allTasks.length > 0) {
-        if (cardsContainer === null) {
+        if (!cardsContainer) {
             cardsContainer = document.createElement('div');
             cardsContainer.setAttribute('id', 'cards-container');
             fillCardsContainer(cardsContainer);
-            main.append(cardsContainer);
+            tasksPageContainer.append(cardsContainer);
             return cardsContainer;
         } else {
             let newCardsContainer = document.createElement('div');
             newCardsContainer.setAttribute('id', 'cards-container');
             fillCardsContainer(newCardsContainer);
-            main.replaceChild(newCardsContainer, cardsContainer);
+            console.log('cardsContainer')
+            console.log(cardsContainer)
+            console.log('tasksPageContainer')
+            console.log(tasksPageContainer)
+            tasksPageContainer.replaceChild(newCardsContainer, cardsContainer);
             return newCardsContainer;
         }
     }
@@ -334,45 +350,47 @@ taskInfoInputButton.addEventListener('click', () => {
     taskInfoForm.dispatchEvent(new Event('submit'));
 });
 
-taskInfoForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    let messages = [];
-    const infoTitle = taskInfoTitle.value;
-    const infoContent = taskInfoContent.value;
-    const taskStatus = taskInfoStatus.options[taskInfoStatus.selectedIndex].text;
+const taskInfoFormListener = () => {
+    taskInfoForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        console.log(cardsContainer)
+        let messages = [];
+        const infoTitle = taskInfoTitle.value;
+        const infoContent = taskInfoContent.value;
+        const taskStatus = taskInfoStatus.options[taskInfoStatus.selectedIndex].text;
 
-    if (infoTitle === '' || infoTitle === null) {
-        messages.push('Le titre est requis');
-    }
-    if (infoContent === '' || infoContent === null) {
-        messages.push('Le contenu est requis');
-    }
-    if (messages.length > 0) {
-        taskInfoErrorMessage.innerText = messages.join(', ');
-        taskInfoErrorDiv.append(taskInfoErrorMessage);
-    } else {
-        messages.length = 0;
-        if (taskInfoErrorDiv.contains(taskInfoErrorMessage)) taskInfoErrorDiv.removeChild(taskInfoErrorMessage);
-        taskInfoStatus.options.selectedIndex = 0;
-        //let task = new Task(taskStatus, taskTitle, taskContent);
-        // allTasks.push(task);
-        currentTaskInfo._title = infoTitle;
-        currentTaskInfo._content = infoContent;
-        currentTaskInfo._status = taskStatus;
-        currentTaskInfo = undefined;
-        localStorage.setItem('tasks', JSON.stringify(allTasks));
-    }
-    history.pushState(
-        {
-            lastPage: '/tasks/id',
-        },
-        null,
-        "/tasks"
-    );
-    window.dispatchEvent(new Event('pathnamechange'));
-});
+        if (infoTitle === '' || infoTitle === null) {
+            messages.push('Le titre est requis');
+        }
+        if (infoContent === '' || infoContent === null) {
+            messages.push('Le contenu est requis');
+        }
+        if (messages.length > 0) {
+            taskInfoErrorMessage.innerText = messages.join(', ');
+            taskInfoErrorDiv.append(taskInfoErrorMessage);
+        } else {
+            messages.length = 0;
+            if (taskInfoErrorDiv.contains(taskInfoErrorMessage)) taskInfoErrorDiv.removeChild(taskInfoErrorMessage);
+            taskInfoStatus.options.selectedIndex = 0;
+            currentTaskInfo._title = infoTitle;
+            currentTaskInfo._content = infoContent;
+            currentTaskInfo._status = taskStatus;
+            //currentTaskInfo = undefined;
+            localStorage.setItem('tasks', JSON.stringify(allTasks));
+        }
+        history.pushState(
+            {
+                lastPage: '/tasks/id',
+            },
+            null,
+            "/tasks"
+        );
+        window.dispatchEvent(new Event('pathnamechange'));
+    });
+}
 
 const fillTaskInfoForm = () => {
+    console.log(currentTaskInfo._title)
     taskInfoTitle.setAttribute('value', currentTaskInfo._title);
     taskInfoContent.setAttribute('value', currentTaskInfo._content);
     taskInfoContent.setAttribute('required', 'required');
@@ -436,7 +454,6 @@ const makeKanbanCardFromTask = (task) => {
 }
 
 const fillKanban = () => {
-    console.log('fillKanban()')
     if (allTasks.length > 0) {
         allTasks.forEach((task) => {
             switch (task._status) {
@@ -482,7 +499,6 @@ const emptyKanban = () => {
 }
 
 const changeTaskStatusInStorage = (draggable, status) => {
-    console.log('changeTaskStatusInStorage')
     let task = allTasks.find((el) => {
         return el._id === parseInt(draggable.dataset.id);
     });
@@ -498,13 +514,10 @@ const draggableListener = () => {
     draggables = document.querySelectorAll('.draggable');
     draggables.forEach(draggable => {
         draggable.addEventListener('dragstart', () => {
-            console.log('start')
-            //console.log(kanbanBoard)
             draggable.classList.add('dragging');
         });
 
         draggable.addEventListener('dragend', () => {
-            console.log('end');
             switch (draggable.parentNode) {
                 case toPlanContainer:
                     changeTaskStatusInStorage(draggable, STATUS_TO_PLAN);
@@ -520,7 +533,6 @@ const draggableListener = () => {
                     break;
             }
             draggable.classList.remove('dragging');
-            //console.log(kanbanBoard)
         });
     });
 }
@@ -585,6 +597,7 @@ taskCreationForm.addEventListener('submit', (e) => {
         localStorage.setItem('tasks', JSON.stringify(allTasks));
     }
     cardsContainer = displayStoredTasksOnAdd();
+    taskInfoHandler();
 });
 
 
@@ -708,6 +721,18 @@ const fillMembersCardsContainer = (container) => {
 }
 
 // Display existing members in members page
+const displayMembersStoredOnComeInPage = () => {
+    if (allMembers.length > 0) {
+        if (membersCardContainer === null) {
+            membersCardContainer = document.createElement('div');
+            membersCardContainer.setAttribute('id', 'members-cards-container');
+            fillMembersCardsContainer(membersCardContainer);
+            main.append(membersCardContainer);
+            return membersCardContainer;
+        }
+    }
+}
+
 const displayMembersStored = () => {
     if (allMembers.length > 0) {
         if (membersCardContainer === null) {
@@ -831,56 +856,49 @@ membersCreationForm.addEventListener('submit', (e) => {
 
 // Path handler
 window.addEventListener('pathnamechange', () => {
-    console.log('path handler : pathname : ' + location.pathname)
+    console.log('path handler : pathname : ' + location.pathname);
+    console.log(currentTaskInfo)
     if (location.pathname === '/tasks') {
         if (history.state.lastPage === '/kanban') {
             emptyKanban();
             main.removeChild(kanbanContainer);
-        } else if (history.state.lastPage === '/tasks/id') {
-            main.removeChild(taskInfoContainer);
         } else if (history.state.lastPage === '/members') {
             main.removeChild(membersErrorDiv);
             main.removeChild(membersCreationForm);
-            main.removeChild(membersCardContainer)
+            if (membersCardContainer !== null)
+                main.removeChild(membersCardContainer)
         }
-        main.append(errorDiv);
-        main.append(taskCreationForm);
-        displayStoredTasksOnComeInPage();
-        if (cardsContainer !== null) {
-            main.append(cardsContainer);
-            taskInfoHandler();
-        }
-        if (main.contains(taskInfoContainer))
+        if (main.contains(taskInfoContainer)) {
             main.removeChild(taskInfoContainer);
+        }
+        //main.append(errorDiv);
+        //main.append(taskCreationForm);
+        //cardsContainer = document.getElementById('cards-container');
+        main.append(tasksPageContainer);
+        cardsContainer = displayStoredTasksOnAdd();
+        console.log(cardsContainer)
+        taskInfoHandler();
     } else if (urlPatternIsValid(location.href)) {
         currentTaskInfo = allTasks.find((el) => {
             return el._id === parseInt(history.state.cardId);
         });
-        if (main.contains(errorDiv))
-            main.removeChild(errorDiv);
-        if (main.contains(taskCreationForm))
-            main.removeChild(taskCreationForm);
-
-        //main.append;
-        if (main.contains(cardsContainer)) {
-            if (cardsContainer !== null) main.removeChild(cardsContainer);
-        }
+        if (main.contains(tasksPageContainer))
+            main.removeChild(tasksPageContainer);
         main.append(taskInfoContainer);
         fillTaskInfoForm();
-        // display form card id
-        // appel à une fonction display avec 'taskWithParamId'
+        taskInfoFormListener();
     } else if (location.pathname === '/kanban') {
         if (history.state.lastPage === '/tasks') {
-            main.removeChild(errorDiv);
-            main.removeChild(taskCreationForm);
-            if (cardsContainer !== null)
-                main.removeChild(cardsContainer);
+            main.removeChild(tasksPageContainer);
+            /*            main.removeChild(taskCreationForm);
+                        if (cardsContainer !== null)
+                            main.removeChild(cardsContainer);*/
         } else if (history.state.lastPage === '/members') {
             main.removeChild(membersErrorDiv);
             main.removeChild(membersCreationForm);
-            main.removeChild(membersCardContainer)
+            if (membersCardContainer !== null)
+                main.removeChild(membersCardContainer)
         }
-
         if (history.state.lastPage !== location.pathname) {
             main.append(kanbanContainer);
             fillKanban();
@@ -888,18 +906,23 @@ window.addEventListener('pathnamechange', () => {
             containersListener();
         }
     } else if (location.pathname === '/members') {
+        console.log('/members')
         if (history.state.lastPage === '/tasks') {
-            main.removeChild(errorDiv);
-            main.removeChild(taskCreationForm);
-            if (cardsContainer !== null)
-                main.removeChild(cardsContainer);
+            console.log('from /tasks')
+            main.removeChild(tasksPageContainer);
+            /*            main.removeChild(taskCreationForm);
+                        if (cardsContainer !== null)
+                            main.removeChild(cardsContainer);*/
         } else if (history.state.lastPage === '/kanban') {
+            console.log('from /kanban')
             emptyKanban();
             main.removeChild(kanbanContainer);
         }
         // append elements
         main.append(membersErrorDiv);
         main.append(membersCreationForm);
-        membersCardContainer = displayMembersStored()
+        displayMembersStoredOnComeInPage();
+        //main.append(membersCardContainer);
+        //console.log(main)
     }
 });
