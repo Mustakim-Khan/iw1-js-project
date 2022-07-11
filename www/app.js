@@ -11,7 +11,7 @@ const STATUS_TO_VALIDATE = 'A Valider';
 const STATUS_DONE = 'Fait';
 
 // Define route in history
-kanban.addEventListener("click", (e) => {
+kanban.addEventListener("click", () => {
     history.pushState(
         {
             lastPage: location.pathname,
@@ -22,7 +22,7 @@ kanban.addEventListener("click", (e) => {
     window.dispatchEvent(new Event('pathnamechange'));
 });
 
-task.addEventListener("click", (e) => {
+task.addEventListener("click", () => {
     history.pushState(
         {
             lastPage: location.pathname,
@@ -33,7 +33,7 @@ task.addEventListener("click", (e) => {
     window.dispatchEvent(new Event('pathnamechange'));
 });
 
-members.addEventListener("click", (e) => {
+members.addEventListener("click", () => {
     history.pushState(
         {
             lastPage: location.pathname,
@@ -138,7 +138,6 @@ class Task {
 // -- tasks page
 // Task card
 let cardsContainer = document.getElementById('cards-container');
-const fillTasksButton = document.getElementById("fillTasksButton");
 
 // Error div
 let errorDiv = document.createElement('div');
@@ -217,25 +216,6 @@ const fillCardsContainer = (container) => {
         }
     });
 }
-// --- Does use !
-// fillTasksButton.addEventListener("click", (e) => {
-//     let t1 = new Task(STATUS_TO_PLAN, "To Plan 1", "To Plan 1 Content");
-//     let t2 = new Task(STATUS_TO_PLAN, "To Plan 2", "To Plan 2 Content");
-//     let t3 = new Task(STATUS_DOING, "Doing 1", "Doing 1 Content")
-//     let t4 = new Task(STATUS_DOING, "Doing 2", "Doing 2 Content")
-//     let t5 = new Task(STATUS_TO_VALIDATE, "To Validate 1", "To Validate 1 Content");
-//     let t6 = new Task(STATUS_TO_VALIDATE, "To Validate 2", "To Validate 2 Content");
-//     let t7 = new Task(STATUS_DONE, "Done 2", "Done 2 Content");
-//     let t8 = new Task(STATUS_DONE, "Done 2", "Done 2 Content");
-//     console.log(t1);
-//     console.log(t2);
-//     console.log(t3);
-//     console.log(t4);
-//     console.log(t5);
-//     console.log(t6);
-//     console.log(t7);
-//     console.log(t8);
-// });
 
 const urlPatternIsValid = (url) => {
     const pattern = new URLPattern('/tasks/:id(\\d+)', location.origin);
@@ -277,7 +257,7 @@ const displayStoredTasksOnAdd = () => {
 const taskInfoHandler = () => {
     let cards = document.querySelectorAll('.card');
     cards.forEach((card) => {
-        card.addEventListener('click', (e) => {
+        card.addEventListener('click', () => {
             history.pushState(
                 {cardId: card.dataset.id},
                 null,
@@ -350,7 +330,7 @@ taskInfoForm.append(taskInfoStatusLabel);
 taskInfoForm.append(taskInfoInputButton)
 taskInfoContainer.append(taskInfoForm);
 
-taskInfoInputButton.addEventListener('click', (e) => {
+taskInfoInputButton.addEventListener('click', () => {
     taskInfoForm.dispatchEvent(new Event('submit'));
 });
 
@@ -517,13 +497,13 @@ const changeTaskStatusInStorage = (draggable, status) => {
 const draggableListener = () => {
     draggables = document.querySelectorAll('.draggable');
     draggables.forEach(draggable => {
-        draggable.addEventListener('dragstart', (e) => {
+        draggable.addEventListener('dragstart', () => {
             console.log('start')
             //console.log(kanbanBoard)
             draggable.classList.add('dragging');
         });
 
-        draggable.addEventListener('dragend', (e) => {
+        draggable.addEventListener('dragend', () => {
             console.log('end');
             switch (draggable.parentNode) {
                 case toPlanContainer:
@@ -575,7 +555,7 @@ const getDragAfterElement = (container, y) => {
 
 
 // Listeners
-inputButton.addEventListener('click', (e) => {
+inputButton.addEventListener('click', () => {
     taskCreationForm.dispatchEvent(new Event('submit'));
 });
 
@@ -605,81 +585,6 @@ taskCreationForm.addEventListener('submit', (e) => {
         localStorage.setItem('tasks', JSON.stringify(allTasks));
     }
     cardsContainer = displayStoredTasksOnAdd();
-});
-
-// Path handler
-window.addEventListener('pathnamechange', () => {
-    console.log('path handler : pathname : ' + location.pathname)
-    if (location.pathname === '/tasks') {
-        if (history.state.lastPage === '/kanban') {
-            emptyKanban();
-            main.removeChild(kanbanContainer);
-        } else if (history.state.lastPage === '/tasks/id') {
-            main.removeChild(taskInfoContainer);
-        } else if (history.state.lastPage === '/members') {
-            main.removeChild(membersErrorDiv);
-            main.removeChild(membersCreationForm);
-            main.removeChild(membersCardContainer)
-        }
-        main.append(errorDiv);
-        main.append(taskCreationForm);
-        displayStoredTasksOnComeInPage();
-        if (cardsContainer !== null) {
-            main.append(cardsContainer);
-            taskInfoHandler();
-        }
-        if (main.contains(taskInfoContainer))
-            main.removeChild(taskInfoContainer);
-    } else if (urlPatternIsValid(location.href)) {
-        currentTaskInfo = allTasks.find((el) => {
-            return el._id === parseInt(history.state.cardId);
-        });
-        if (main.contains(errorDiv))
-            main.removeChild(errorDiv);
-        if (main.contains(taskCreationForm))
-            main.removeChild(taskCreationForm);
-
-        //main.append;
-        if (main.contains(cardsContainer)) {
-            if (cardsContainer !== null) main.removeChild(cardsContainer);
-        }
-        main.append(taskInfoContainer);
-        fillTaskInfoForm();
-        // display form card id
-        // appel à une fonction display avec 'taskWithParamId'
-    } else if (location.pathname === '/kanban') {
-        if (history.state.lastPage === '/tasks') {
-            main.removeChild(errorDiv);
-            main.removeChild(taskCreationForm);
-            if (cardsContainer !== null)
-                main.removeChild(cardsContainer);
-        } else if (history.state.lastPage === '/members') {
-            main.removeChild(membersErrorDiv);
-            main.removeChild(membersCreationForm);
-            main.removeChild(membersCardContainer)
-        }
-
-        if (history.state.lastPage !== location.pathname) {
-            main.append(kanbanContainer);
-            fillKanban();
-            draggableListener();
-            containersListener();
-        }
-    } else if (location.pathname === '/members') {
-        if (history.state.lastPage === '/tasks') {
-            main.removeChild(errorDiv);
-            main.removeChild(taskCreationForm);
-            if (cardsContainer !== null)
-                main.removeChild(cardsContainer);
-        } else if (history.state.lastPage === '/kanban') {
-            emptyKanban();
-            main.removeChild(kanbanContainer);
-        }
-        // append elements
-        main.append(membersErrorDiv);
-        main.append(membersCreationForm);
-        displayMembersStored()
-    }
 });
 
 
@@ -799,9 +704,9 @@ const fillMembersCardsContainer = (container) => {
         p.innerText = member._fname.concat(' ', member._lname);
         card.append(p);
         container.append(card);
-        // }
     });
 }
+
 // Display existing members in members page
 const displayMembersStored = () => {
     if (allMembers.length > 0) {
@@ -812,16 +717,16 @@ const displayMembersStored = () => {
             main.append(membersCardContainer);
             return membersCardContainer;
         } else {
-            let newmembersCardContainer = document.createElement('div');
-            newmembersCardContainer.setAttribute('id', 'members-cards-container');
-            fillMembersCardsContainer(newmembersCardContainer);
-            main.replaceChild(newmembersCardContainer, membersCardContainer);
-            return newmembersCardContainer;
+            let newMembersCardContainer = document.createElement('div');
+            newMembersCardContainer.setAttribute('id', 'members-cards-container');
+            fillMembersCardsContainer(newMembersCardContainer);
+            main.replaceChild(newMembersCardContainer, membersCardContainer);
+            return newMembersCardContainer;
         }
     }
 }
 
-// Define form celements and set theirs attributes.
+// Define form elements and set their attributes.
 let membersInputFirstName = document.createElement('input'); // Input FName
 const membersInputFirstName_attributes = {
     type: 'text',
@@ -888,7 +793,7 @@ membersCreationForm.append(membersSubmitButton)
 
 
 // Create members Listeners
-membersSubmitButton.addEventListener('click', (e) => {
+membersSubmitButton.addEventListener('click', () => {
     membersCreationForm.dispatchEvent(new Event('submit'));
 });
 
@@ -924,3 +829,77 @@ membersCreationForm.addEventListener('submit', (e) => {
     membersCardContainer = displayMembersStored();
 });
 
+// Path handler
+window.addEventListener('pathnamechange', () => {
+    console.log('path handler : pathname : ' + location.pathname)
+    if (location.pathname === '/tasks') {
+        if (history.state.lastPage === '/kanban') {
+            emptyKanban();
+            main.removeChild(kanbanContainer);
+        } else if (history.state.lastPage === '/tasks/id') {
+            main.removeChild(taskInfoContainer);
+        } else if (history.state.lastPage === '/members') {
+            main.removeChild(membersErrorDiv);
+            main.removeChild(membersCreationForm);
+            main.removeChild(membersCardContainer)
+        }
+        main.append(errorDiv);
+        main.append(taskCreationForm);
+        displayStoredTasksOnComeInPage();
+        if (cardsContainer !== null) {
+            main.append(cardsContainer);
+            taskInfoHandler();
+        }
+        if (main.contains(taskInfoContainer))
+            main.removeChild(taskInfoContainer);
+    } else if (urlPatternIsValid(location.href)) {
+        currentTaskInfo = allTasks.find((el) => {
+            return el._id === parseInt(history.state.cardId);
+        });
+        if (main.contains(errorDiv))
+            main.removeChild(errorDiv);
+        if (main.contains(taskCreationForm))
+            main.removeChild(taskCreationForm);
+
+        //main.append;
+        if (main.contains(cardsContainer)) {
+            if (cardsContainer !== null) main.removeChild(cardsContainer);
+        }
+        main.append(taskInfoContainer);
+        fillTaskInfoForm();
+        // display form card id
+        // appel à une fonction display avec 'taskWithParamId'
+    } else if (location.pathname === '/kanban') {
+        if (history.state.lastPage === '/tasks') {
+            main.removeChild(errorDiv);
+            main.removeChild(taskCreationForm);
+            if (cardsContainer !== null)
+                main.removeChild(cardsContainer);
+        } else if (history.state.lastPage === '/members') {
+            main.removeChild(membersErrorDiv);
+            main.removeChild(membersCreationForm);
+            main.removeChild(membersCardContainer)
+        }
+
+        if (history.state.lastPage !== location.pathname) {
+            main.append(kanbanContainer);
+            fillKanban();
+            draggableListener();
+            containersListener();
+        }
+    } else if (location.pathname === '/members') {
+        if (history.state.lastPage === '/tasks') {
+            main.removeChild(errorDiv);
+            main.removeChild(taskCreationForm);
+            if (cardsContainer !== null)
+                main.removeChild(cardsContainer);
+        } else if (history.state.lastPage === '/kanban') {
+            emptyKanban();
+            main.removeChild(kanbanContainer);
+        }
+        // append elements
+        main.append(membersErrorDiv);
+        main.append(membersCreationForm);
+        membersCardContainer = displayMembersStored()
+    }
+});
