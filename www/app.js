@@ -51,25 +51,6 @@ class Kanban {
         this.doingTasks = [];
         this.toValidateTasks = [];
         this.doneTasks = [];
-
-/*        if (allTasks.length > 0) {
-            allTasks.forEach((task) => {
-                switch (task._status) {
-                    case STATUS_TO_PLAN:
-                        kanbanBoard.toPlanTasks.push(task);
-                        break;
-                    case STATUS_DOING:
-                        kanbanBoard.doingTasks.push(task);
-                        break;
-                    case STATUS_TO_VALIDATE:
-                        kanbanBoard.toValidateTasks.push(task);
-                        break;
-                    case STATUS_DONE:
-                        kanbanBoard.doneTasks.push(task);
-                        break;
-                }
-            });
-        }*/
         localStorage.setItem('kanban', JSON.stringify(this));
     }
 }
@@ -312,7 +293,6 @@ const taskInfoHandler = () => {
 let taskInfoContainer = document.createElement('div');
 taskInfoContainer.classList.add('tasks-info-container');
 //taskInfoContainer.setAttribute('id', 'taskInfoContainer');
-
 
 
 let taskInfoForm = document.createElement('form');
@@ -636,7 +616,7 @@ window.addEventListener('pathnamechange', () => {
             main.removeChild(kanbanContainer);
         } else if (history.state.lastPage === '/tasks/id') {
             main.removeChild(taskInfoContainer);
-        }else if(history.state.lastPage === '/members'){
+        } else if (history.state.lastPage === '/members') {
             main.removeChild(membersErrorDiv);
             main.removeChild(membersCreationForm);
             main.removeChild(membersCardContainer)
@@ -648,7 +628,7 @@ window.addEventListener('pathnamechange', () => {
             main.append(cardsContainer);
             taskInfoHandler();
         }
-        if(main.contains(taskInfoContainer))
+        if (main.contains(taskInfoContainer))
             main.removeChild(taskInfoContainer);
     } else if (urlPatternIsValid(location.href)) {
         currentTaskInfo = allTasks.find((el) => {
@@ -673,7 +653,7 @@ window.addEventListener('pathnamechange', () => {
             main.removeChild(taskCreationForm);
             if (cardsContainer !== null)
                 main.removeChild(cardsContainer);
-        }else if(history.state.lastPage === '/members'){
+        } else if (history.state.lastPage === '/members') {
             main.removeChild(membersErrorDiv);
             main.removeChild(membersCreationForm);
             main.removeChild(membersCardContainer)
@@ -685,7 +665,7 @@ window.addEventListener('pathnamechange', () => {
             draggableListener();
             containersListener();
         }
-    } else if(location.pathname === '/members'){
+    } else if (location.pathname === '/members') {
         if (history.state.lastPage === '/tasks') {
             main.removeChild(errorDiv);
             main.removeChild(taskCreationForm);
@@ -706,6 +686,7 @@ window.addEventListener('pathnamechange', () => {
 // --- MEMEBERS PAGE --- //
 // Member id
 let nextMemberId = (localStorage.getItem('nextMemberId') ? parseInt(localStorage.getItem('nextMemberId')) : 1);
+
 // Class
 class Members {
     constructor(fname, lname, email, occupation, taskIds) {
@@ -713,7 +694,7 @@ class Members {
         this._fname = fname;
         this._lname = lname;
         this._email = email;
-        this._occoccupation =occupation;
+        this._occoccupation = occupation;
         this._taskIds = taskIds; // Collection of options selected
         nextMemberId++;
         localStorage.setItem('nextMemberId', nextMemberId.toString());
@@ -726,6 +707,7 @@ class Members {
     get fname() {
         return this._fname;
     }
+
     set fname(value) {
         this._fname = value;
     }
@@ -733,6 +715,7 @@ class Members {
     get lname() {
         return this._lname;
     }
+
     set lname(value) {
         this._lname = value;
     }
@@ -740,6 +723,7 @@ class Members {
     get email() {
         return this._email;
     }
+
     set email(value) {
         this._email = value;
     }
@@ -747,6 +731,7 @@ class Members {
     get occupation() {
         return this._occupation;
     }
+
     set occupation(value) {
         this._occupation = value;
     }
@@ -754,6 +739,7 @@ class Members {
     get taskIds() {
         return this._taskIds;
     }
+
     set taskIds(collection) {
         this._taskIds = collection;
     }
@@ -775,7 +761,7 @@ membersErrorDiv.append(errorMessage);
 
 function setAttributes(element, attributes) {
     Object.keys(attributes).forEach(attr => {
-      element.setAttribute(attr, attributes[attr]);
+        element.setAttribute(attr, attributes[attr]);
     });
 }
 
@@ -790,9 +776,14 @@ const membersSelectTask_options = (select) => {
     }
 }
 
-const formSubmitIsValid = (errorsArray,input) => {
+const formSubmitIsValid = (errorsArray, input) => {
     if (input.value === '' || input === null) {
-        errorsArray.push(`${input.getAttribute("placeholder")} is required`);
+        errorsArray.push(`${input.getAttribute("placeholder")} est requis`);
+    }
+    if (input.type === 'email') {
+        if (!input.value.match(/[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/)) {
+            errorsArray.push(`${input.getAttribute("placeholder")} n'est pas valide`);
+        }
     }
     return input.value;
 }
@@ -800,14 +791,14 @@ const formSubmitIsValid = (errorsArray,input) => {
 const fillMembersCardsContainer = (container) => {
     allMembers.forEach((member) => {
         // if (task._status === STATUS_TO_PLAN) {
-            let card = document.createElement('div');
-            card.setAttribute('data-id', member._id);
-            card.setAttribute('class', 'card');
-            let p = document.createElement('p');
-            p.setAttribute('class', 'card-title');
-            p.innerText = member._fname.concat(' ', member._lname);
-            card.append(p);
-            container.append(card);
+        let card = document.createElement('div');
+        card.setAttribute('data-id', member._id);
+        card.setAttribute('class', 'card');
+        let p = document.createElement('p');
+        p.setAttribute('class', 'card-title');
+        p.innerText = member._fname.concat(' ', member._lname);
+        card.append(p);
+        container.append(card);
         // }
     });
 }
@@ -836,7 +827,7 @@ const membersInputFirstName_attributes = {
     type: 'text',
     name: 'membersFirstName',
     value: '',
-    placeholder:'Prénom',
+    placeholder: 'Prénom',
     required: 'required',
     style: 'margin: 0 3px;'
 };
@@ -846,17 +837,17 @@ const membersInputLastName_attributes = {
     type: 'text',
     name: 'membersLastName',
     value: '',
-    placeholder:'Nom',
+    placeholder: 'Nom',
     required: 'required',
     style: 'margin: 0 3px;'
 };
 setAttributes(membersInputLastName, membersInputLastName_attributes)
 let membersInputEmail = document.createElement('input'); // Input Email
 const membersInputEmail_attributes = {
-    type: 'text',
+    type: 'email',
     name: 'membersEmail',
     value: '',
-    placeholder:'prenom.nom@gmail.com',
+    placeholder: 'Email',
     required: 'required',
     style: 'margin: 0 3px;'
 };
@@ -866,7 +857,7 @@ const membersInputOccupation_attributes = {
     type: 'text',
     name: 'membersOccupation',
     value: '',
-    placeholder:'Poste',
+    placeholder: 'Poste',
     required: 'required',
     style: 'margin: 0 3px;'
 };
@@ -905,21 +896,19 @@ membersCreationForm.addEventListener('submit', (e) => {
     e.preventDefault();
     let messages = [];
     // Retreive inputs values
-    let InputFirstNameValue = formSubmitIsValid(messages,membersInputFirstName);
-    let InputLastNameValue = formSubmitIsValid(messages,membersInputLastName);
-    let membersInputEmailValue = formSubmitIsValid(messages,membersInputEmail);
-    let membersInputOccupationValue = formSubmitIsValid(messages,membersInputOccupation);
+    let InputFirstNameValue = formSubmitIsValid(messages, membersInputFirstName);
+    let InputLastNameValue = formSubmitIsValid(messages, membersInputLastName);
+    let membersInputEmailValue = formSubmitIsValid(messages, membersInputEmail);
+    let membersInputOccupationValue = formSubmitIsValid(messages, membersInputOccupation);
     let membersSelectTaskValue = membersSelectTask.selectedOptions
     let collectionTaskId = []
-    for(let i=0; i<membersSelectTaskValue.length; i++){
+    for (let i = 0; i < membersSelectTaskValue.length; i++) {
         collectionTaskId.push(membersSelectTaskValue[i].value)
     }
-
     if (messages.length > 0) {
         membersErrorMessage.innerText = messages.join(', ');
         membersErrorDiv.append(membersErrorMessage);
-    }
-    else {
+    } else {
         messages.length = 0;
         membersInputFirstName.value = '';
         membersInputLastName.value = '';
