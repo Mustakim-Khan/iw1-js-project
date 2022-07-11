@@ -220,14 +220,6 @@ fillTasksButton.addEventListener("click", (e) => {
     let t6 = new Task(STATUS_TO_VALIDATE, "To Validate 2", "To Validate 2 Content");
     let t7 = new Task(STATUS_DONE, "Done 2", "Done 2 Content");
     let t8 = new Task(STATUS_DONE, "Done 2", "Done 2 Content");
-    console.log(t1);
-    console.log(t2);
-    console.log(t3);
-    console.log(t4);
-    console.log(t5);
-    console.log(t6);
-    console.log(t7);
-    console.log(t8);
 });
 
 const urlPatternIsValid = (url) => {
@@ -370,8 +362,6 @@ taskInfoForm.addEventListener('submit', (e) => {
         taskInfoErrorDiv.append(taskInfoErrorMessage);
     } else {
         messages.length = 0;
-        taskInfoTitle.value = '';
-        taskInfoContent.value = '';
         if (taskInfoErrorDiv.contains(taskInfoErrorMessage)) taskInfoErrorDiv.removeChild(taskInfoErrorMessage);
         taskInfoStatus.options.selectedIndex = 0;
         //let task = new Task(taskStatus, taskTitle, taskContent);
@@ -382,7 +372,6 @@ taskInfoForm.addEventListener('submit', (e) => {
         currentTaskInfo = undefined;
         localStorage.setItem('tasks', JSON.stringify(allTasks));
     }
-    console.log(location.pathname)
     history.pushState(
         {
             lastPage: '/tasks/id',
@@ -401,20 +390,10 @@ const fillTaskInfoForm = () => {
     taskInfoContent.setAttribute('value', currentTaskInfo._content);
     taskInfoContent.setAttribute('required', 'required');
     taskInfoTitle.setAttribute('required', 'required');
-
-
-    /*
-        console.log(allTasks);
-        task._title = 'TEST'
-        console.log(allTasks);
-        localStorage.setItem('tasks', JSON.stringify(allTasks));
-    */
     selectStatus.selectedIndex = 0;
-
-    /*
-      taskInfoTitle.setAttribute('value', currentTaskInfo._title);
-      taskInfoContent.setAttribute('value', currentTaskInfo._content);*/
-    //taskInfoStatus.setAttribute('value', currentTaskInfo._status);
+    console.log(currentTaskInfo)
+    console.log(taskInfoTitle)
+    console.log(taskInfoContent)
 }
 
 
@@ -630,7 +609,7 @@ taskCreationForm.addEventListener('submit', (e) => {
 
 // Path handler
 window.addEventListener('pathnamechange', () => {
-    console.log('path handler !')
+    console.log('path handler : pathname : ' + location.pathname)
     if (location.pathname === '/tasks') {
         if (history.state.lastPage === '/kanban') {
             emptyKanban();
@@ -651,8 +630,6 @@ window.addEventListener('pathnamechange', () => {
         currentTaskInfo = allTasks.find((el) => {
             return el._id === parseInt(history.state.cardId);
         });
-        /*      console.log('history.state.cardId');
-                console.log(parseInt(history.state.cardId));*/
         if (main.contains(errorDiv))
             main.removeChild(errorDiv);
         if (main.contains(taskCreationForm))
@@ -662,7 +639,6 @@ window.addEventListener('pathnamechange', () => {
         if (main.contains(cardsContainer)) {
             if (cardsContainer !== null) main.removeChild(cardsContainer);
         }
-        console.log(taskInfoContainer)
         main.append(taskInfoContainer);
         fillTaskInfoForm();
         // display form card id
