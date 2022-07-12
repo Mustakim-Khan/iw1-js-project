@@ -4,6 +4,11 @@ const kanban = document.getElementById("kanban");
 const task = document.getElementById("task");
 const members = document.getElementById("members");
 
+// Init task id at 1 if 'nextTaskId' doesn't exist.
+let nextTaskId = (localStorage.getItem('nextTaskId') ? parseInt(localStorage.getItem('nextTaskId')) : 1);
+// Retrieve from local storage 'tasks' item.
+let allTasks = (localStorage.getItem('tasks') ? JSON.parse(localStorage.getItem('tasks')) : []);
+let allMembers = (localStorage.getItem('members') ? JSON.parse(localStorage.getItem('members')) : []);
 // Tasks variables
 const STATUS_TO_PLAN = 'A Planifier';
 const STATUS_DOING = 'En cours';
@@ -91,21 +96,17 @@ const updateKanbanBoard = () => {
     }
 }
 
-// Init task id at 1 if 'nextTaskId' doesn't exist.
-let nextTaskId = (localStorage.getItem('nextTaskId') ? parseInt(localStorage.getItem('nextTaskId')) : 1);
-// Retreive from local storage 'tasks' item.
-let allTasks = (localStorage.getItem('tasks') ? JSON.parse(localStorage.getItem('tasks')) : []);
-
 // Kanban variables
 let kanbanBoard = (localStorage.getItem('kanban') ? JSON.parse(localStorage.getItem('kanban')) : new Kanban());
 let currentTaskInfo = undefined;
 
 class Task {
-    constructor(status, title, content) {
+    constructor(status, title, content, members) {
         this._id = nextTaskId;
         this._status = status;
         this._title = title;
         this._content = content;
+        this._members = members;
         nextTaskId++;
         localStorage.setItem('nextTaskId', nextTaskId.toString());
     }
@@ -139,6 +140,20 @@ class Task {
     }
 }
 
+const fillTaskMembersOptions = () => {
+    console.log('fillTaskMembersOptions');
+    console.log(allMembers);
+    if (allMembers.length > 0) {
+        allMembers.forEach((member) => {
+                let memberOption = document.createElement('option');
+                memberOption.value = member._id;
+                memberOption.text = `${member._fname} ${member._lname}`;
+                taskMembers.append(memberOption);
+            }
+        )
+    }
+}
+
 // -- tasks page
 // Task card
 let tasksPageContainer = document.createElement('div');
@@ -161,7 +176,8 @@ taskCreationForm.setAttribute('action', '');
 let inputTitle = document.createElement('input'); // Input TITLE
 let selectStatus = document.createElement('select'); // Input select STATUS
 let inputContent = document.createElement('input'); // Input CONTENT
-let inputButton = document.createElement('input');  //? Button submit
+let taskMembers = document.createElement('select');  // Task members select
+let inputButton = document.createElement('input');  // Button submit
 
 // Input TITLE : Attributes
 inputTitle.setAttribute('type', 'text');
@@ -176,6 +192,9 @@ inputContent.setAttribute('name', 'contentInput');
 inputContent.setAttribute('value', '');
 inputContent.setAttribute('placeholder', 'Contenu de la tâche');
 inputContent.setAttribute('required', 'required');
+
+// taskMembers attributes
+taskMembers.multiple = true;
 
 // button submit : Attributes
 inputButton.setAttribute('type', 'button');
@@ -205,11 +224,11 @@ selectStatus.append(optionDone);
 taskCreationForm.append(inputTitle);
 taskCreationForm.append(selectStatus);
 taskCreationForm.append(inputContent);
+taskCreationForm.append(taskMembers);
 taskCreationForm.append(inputButton);
 
 tasksPageContainer.append(errorDiv);
 tasksPageContainer.append(taskCreationForm);
-
 
 const fillCardsContainer = (container) => {
     allTasks.forEach((task) => {
@@ -266,7 +285,6 @@ const taskInfoHandler = () => {
 }
 
 // Task INFO => variables
-
 let taskInfoContainer = document.createElement('div');
 taskInfoContainer.classList.add('tasks-info-container');
 //taskInfoContainer.setAttribute('id', 'taskInfoContainer');
@@ -421,7 +439,6 @@ kanbanContainer.append(doingContainer);
 kanbanContainer.append(toValidateContainer);
 kanbanContainer.append(doneContainer);
 
-// Kaban div for the appr tasks.
 const makeKanbanCardFromTask = (task) => {
     let card = document.createElement('div');
     card.classList.add('draggable');
@@ -555,6 +572,16 @@ taskCreationForm.addEventListener('submit', (e) => {
     const taskTitle = inputTitle.value;
     const taskContent = inputContent.value;
     const taskStatus = selectStatus.options[selectStatus.selectedIndex].text;
+    const selectedTaskMembers = taskMembers.selectedOptions;
+    let membersCollection = [];
+    for (let i = 0; i < selectedTaskMembers.length; i++) {
+        let memberId = parseInt(selectedTaskMembers[i].value);
+        membersCollection.push(
+            allMembers.find((el) => {
+                return el._id === memberId;
+            })
+        );
+    }
     if (taskTitle === '' || taskTitle === null) {
         messages.push('Title is required');
     }
@@ -570,7 +597,8 @@ taskCreationForm.addEventListener('submit', (e) => {
         inputContent.value = '';
         if (errorDiv.contains(errorMessage)) errorDiv.removeChild(errorMessage);
         selectStatus.options.selectedIndex = 0;
-        let task = new Task(taskStatus, taskTitle, taskContent);
+        taskMembers.selectedIndex = -1;
+        let task = new Task(taskStatus, taskTitle, taskContent, membersCollection);
         allTasks.push(task);
         localStorage.setItem('tasks', JSON.stringify(allTasks));
     }
@@ -637,7 +665,6 @@ membersPageContainer.classList.add('members-page-container');
 // Members Form Content
 let membersCreationForm = document.createElement('form');
 let membersCardContainer = undefined;
-let allMembers = (localStorage.getItem('members') ? JSON.parse(localStorage.getItem('members')) : []);
 
 // Error div
 let membersErrorDiv = document.createElement('div');
@@ -800,6 +827,7 @@ window.addEventListener('pathnamechange', () => {
         if (main.contains(taskInfoContainer)) {
             main.removeChild(taskInfoContainer);
         }
+        fillTaskMembersOptions();
         main.append(tasksPageContainer);
         cardsContainer = displayStoredTasks();
         taskInfoHandler();
