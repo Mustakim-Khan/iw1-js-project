@@ -297,6 +297,7 @@ taskInfoForm.classList.add('tasks-info-container');
 let taskInfoTitle = document.createElement('input');
 let taskInfoStatus = document.createElement('select');
 let taskInfoContent = document.createElement('input');
+let taskInfoMembers = document.createElement('select');
 let taskInfoInputButton = document.createElement('input');
 taskInfoTitle.setAttribute('type', 'text');
 taskInfoContent.setAttribute('type', 'text');
@@ -311,12 +312,15 @@ taskInfoErrorDiv.append(taskInfoErrorMessage);
 let taskInfoTitleLabel = document.createElement('label');
 let taskInfoContentLabel = document.createElement('label');
 let taskInfoStatusLabel = document.createElement('label');
-taskInfoTitleLabel.innerText = 'Title : ';
-taskInfoContentLabel.innerText = 'Content : ';
+let taskInfoMembersLabel = document.createElement('label');
+taskInfoTitleLabel.innerText = 'Titre : ';
+taskInfoContentLabel.innerText = 'Contenus : ';
 taskInfoStatusLabel.innerText = 'Status : ';
+taskInfoMembersLabel.innerText = 'Membres : ';
 taskInfoTitleLabel.append(taskInfoTitle);
 taskInfoContentLabel.append(taskInfoContent);
 taskInfoStatusLabel.append(taskInfoStatus);
+taskInfoMembersLabel.append(taskInfoMembers);
 
 let optionToPlanOnTaskInfoForm = document.createElement('option');
 optionToPlanOnTaskInfoForm.value = STATUS_TO_PLAN;
@@ -341,10 +345,36 @@ taskInfoStatus.append(optionDoneOnTaskInfoForm);
 taskInfoForm.append(taskInfoTitleLabel);
 taskInfoForm.append(taskInfoContentLabel);
 taskInfoForm.append(taskInfoStatusLabel);
+taskInfoForm.append(taskInfoMembersLabel);
 
 taskInfoForm.append(taskInfoInputButton);
 taskInfoContainer.append(taskInfoErrorDiv);
 taskInfoContainer.append(taskInfoForm);
+
+/*
+    console.log('fillTaskMembersOptions');
+    console.log(allMembers);
+    if (allMembers.length > 0) {
+        allMembers.forEach((member) => {
+                let memberOption = document.createElement('option');
+                memberOption.value = member._id;
+                memberOption.text = `${member._fname} ${member._lname}`;
+                taskMembers.append(memberOption);
+            }
+        )
+    }
+ */
+const fillTaskInfoMembersOptions = (task) => {
+    console.log(task._members)
+    if (task._members.length > 0) {
+        task._members.forEach((member) => {
+            let memberOption = document.createElement('option');
+            memberOption.value = member._id;
+            memberOption.text = `${member._fname} ${member._lname}`;
+            taskInfoMembers.append(memberOption);
+        });
+    }
+}
 
 taskInfoInputButton.addEventListener('click', () => {
     taskInfoForm.dispatchEvent(new Event('submit'));
@@ -373,6 +403,9 @@ const taskInfoFormListener = () => {
             currentTaskInfo._title = infoTitle;
             currentTaskInfo._content = infoContent;
             currentTaskInfo._status = taskStatus;
+            while (taskInfoMembers.options.length > 0) {
+                taskInfoMembers.remove(0);
+            }
             //currentTaskInfo = undefined;
             localStorage.setItem('tasks', JSON.stringify(allTasks));
             history.pushState(
@@ -388,10 +421,12 @@ const taskInfoFormListener = () => {
 }
 
 const fillTaskInfoForm = (currentTask) => {
+    console.log(currentTask._title)
     taskInfoTitle.setAttribute('value', '');
     taskInfoTitle.setAttribute('value', currentTask._title);
     taskInfoContent.setAttribute('value', currentTask._content);
     taskInfoStatus.selectedIndex = 0;
+    fillTaskInfoMembersOptions(currentTask);
 }
 
 // KANBAN
