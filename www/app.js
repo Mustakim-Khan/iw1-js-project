@@ -138,6 +138,10 @@ class Task {
     set content(value) {
         this._content = value;
     }
+
+    copyTask() {
+        return 'HELLO';
+    }
 }
 
 const fillTaskMembersOptions = () => {
@@ -298,11 +302,14 @@ let taskInfoTitle = document.createElement('input');
 let taskInfoStatus = document.createElement('select');
 let taskInfoContent = document.createElement('input');
 let taskInfoMembers = document.createElement('select');
+let taskInfoCopyButton = document.createElement('input');
 let taskInfoInputButton = document.createElement('input');
 taskInfoTitle.setAttribute('type', 'text');
 taskInfoContent.setAttribute('type', 'text');
 taskInfoContent.setAttribute('required', 'required');
 taskInfoTitle.setAttribute('required', 'required');
+taskInfoCopyButton.setAttribute('type', 'button');
+taskInfoCopyButton.setAttribute('value', 'Copier');
 taskInfoInputButton.setAttribute('type', 'button');
 taskInfoInputButton.setAttribute('value', 'Modifier');
 let taskInfoErrorDiv = document.createElement('div');
@@ -347,23 +354,31 @@ taskInfoForm.append(taskInfoContentLabel);
 taskInfoForm.append(taskInfoStatusLabel);
 taskInfoForm.append(taskInfoMembersLabel);
 
+
+taskInfoForm.append(taskInfoCopyButton);
 taskInfoForm.append(taskInfoInputButton);
 taskInfoContainer.append(taskInfoErrorDiv);
 taskInfoContainer.append(taskInfoForm);
 
-/*
-    console.log('fillTaskMembersOptions');
-    console.log(allMembers);
-    if (allMembers.length > 0) {
-        allMembers.forEach((member) => {
-                let memberOption = document.createElement('option');
-                memberOption.value = member._id;
-                memberOption.text = `${member._fname} ${member._lname}`;
-                taskMembers.append(memberOption);
-            }
-        )
-    }
- */
+taskInfoCopyButton.addEventListener('click', () => {
+    //let task = new Task(currentTaskInfo._status, currentTaskInfo._title, currentTaskInfo._content, currentTaskInfo._members);
+    let copyTaskMembers = [];
+    currentTaskInfo._members.forEach((member) => {
+        copyTaskMembers.push(member._fname + ' ' + member._lname);
+    });
+    let copyTask =
+`Title : ${ currentTaskInfo._title }
+Content : ${ currentTaskInfo._content }
+Status : ${ currentTaskInfo._status }
+${ (copyTaskMembers.length === 0) ? 'Pas de membres associés' : `Members : ${ copyTaskMembers }`}`;
+    navigator.clipboard.writeText(copyTask)
+        .then(() => {
+            alert('Tâche copié avec succès !');
+        })
+        .catch(() => {
+            alert('Copie échoué');
+        })
+});
 const fillTaskInfoMembersOptions = (task) => {
     console.log(task._members)
     if (task._members.length > 0) {
