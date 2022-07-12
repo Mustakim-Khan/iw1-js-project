@@ -3,7 +3,7 @@ const main = document.getElementById('main');
 const kanban = document.getElementById("kanban");
 const task = document.getElementById("task");
 const members = document.getElementById("members");
-
+const gifElement = document.getElementById('gif');
 // Init task id at 1 if 'nextTaskId' doesn't exist.
 let nextTaskId = (localStorage.getItem('nextTaskId') ? parseInt(localStorage.getItem('nextTaskId')) : 1);
 // Retrieve from local storage 'tasks' item.
@@ -14,6 +14,10 @@ const STATUS_TO_PLAN = 'A Planifier';
 const STATUS_DOING = 'En cours';
 const STATUS_TO_VALIDATE = 'A Valider';
 const STATUS_DONE = 'Fait';
+
+if (location.pathname === '/') {
+    gifElement.style.display = 'block';
+}
 
 // Define route in history
 kanban.addEventListener("click", () => {
@@ -876,6 +880,7 @@ membersCreationForm.addEventListener('submit', (e) => {
 // Path handler
 window.addEventListener('pathnamechange', () => {
     console.log('path handler : pathname : ' + location.pathname);
+    gifElement.style.display = 'none';
     if (location.pathname === '/tasks') {
         if (history.state.lastPage === '/kanban') {
             emptyKanban();
