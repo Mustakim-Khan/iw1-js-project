@@ -231,18 +231,6 @@ const urlPatternIsValid = (url) => {
     return pattern.test(url);
 };
 
-const displayStoredTasksOnComeInPage = () => {
-    if (allTasks.length > 0) {
-        if (!cardsContainer) {
-            cardsContainer = document.createElement('div');
-            cardsContainer.setAttribute('id', 'cards-container');
-            fillCardsContainer(cardsContainer);
-            tasksPageContainer.append(cardsContainer);
-            return cardsContainer;
-        }
-    }
-}
-
 const displayStoredTasks = () => {
     if (allTasks.length > 0) {
         if (!cardsContainer) {
@@ -597,13 +585,12 @@ let nextMemberId = (localStorage.getItem('nextMemberId') ? parseInt(localStorage
 
 // Class
 class Members {
-    constructor(fname, lname, email, occupation, taskIds) {
+    constructor(fname, lname, email, occupation) {
         this._id = nextMemberId;
         this._fname = fname;
         this._lname = lname;
         this._email = email;
         this._occoccupation = occupation;
-        this._taskIds = taskIds; // Collection of options selected
         nextMemberId++;
         localStorage.setItem('nextMemberId', nextMemberId.toString());
     }
@@ -643,20 +630,13 @@ class Members {
     set occupation(value) {
         this._occupation = value;
     }
-
-    get taskIds() {
-        return this._taskIds;
-    }
-
-    set taskIds(collection) {
-        this._taskIds = collection;
-    }
 }
 
+let membersPageContainer = document.createElement('div');
+membersPageContainer.classList.add('members-page-container');
 // Members Form Content
 let membersCreationForm = document.createElement('form');
-// Get members card Id
-let membersCardContainer = document.getElementById('members-cards-container');
+let membersCardContainer = undefined;
 let allMembers = (localStorage.getItem('members') ? JSON.parse(localStorage.getItem('members')) : []);
 
 // Error div
@@ -666,22 +646,10 @@ membersErrorDiv.append(errorMessage);
 
 
 // Members Methods and listeners
-
-function setAttributes(element, attributes) {
+const setAttributes = (element, attributes) => {
     Object.keys(attributes).forEach(attr => {
         element.setAttribute(attr, attributes[attr]);
     });
-}
-
-const membersSelectTask_options = (select) => {
-    if (allTasks.length > 0) {
-        allTasks.forEach((task) => {
-            let optionToPlan = document.createElement('option');
-            optionToPlan.value = task._id;
-            optionToPlan.text = task._title;
-            select.append(optionToPlan);
-        });
-    }
 }
 
 const formSubmitIsValid = (errorsArray, input) => {
@@ -701,7 +669,7 @@ const fillMembersCardsContainer = (container) => {
         // if (task._status === STATUS_TO_PLAN) {
         let card = document.createElement('div');
         card.setAttribute('data-id', member._id);
-        card.setAttribute('class', 'card');
+        card.setAttribute('class', 'member-card');
         let p = document.createElement('p');
         p.setAttribute('class', 'card-title');
         p.innerText = member._fname.concat(' ', member._lname);
@@ -711,31 +679,20 @@ const fillMembersCardsContainer = (container) => {
 }
 
 // Display existing members in members page
-const displayMembersStoredOnComeInPage = () => {
-    if (allMembers.length > 0) {
-        if (membersCardContainer === null) {
-            membersCardContainer = document.createElement('div');
-            membersCardContainer.setAttribute('id', 'members-cards-container');
-            fillMembersCardsContainer(membersCardContainer);
-            main.append(membersCardContainer);
-            return membersCardContainer;
-        }
-    }
-}
-
 const displayMembersStored = () => {
     if (allMembers.length > 0) {
-        if (membersCardContainer === null) {
+        if (!membersCardContainer) {
             membersCardContainer = document.createElement('div');
             membersCardContainer.setAttribute('id', 'members-cards-container');
             fillMembersCardsContainer(membersCardContainer);
-            main.append(membersCardContainer);
+            membersPageContainer.append(membersCardContainer);
             return membersCardContainer;
         } else {
             let newMembersCardContainer = document.createElement('div');
             newMembersCardContainer.setAttribute('id', 'members-cards-container');
             fillMembersCardsContainer(newMembersCardContainer);
-            main.replaceChild(newMembersCardContainer, membersCardContainer);
+            console.log(membersCardContainer)
+            membersPageContainer.replaceChild(newMembersCardContainer, membersCardContainer);
             return newMembersCardContainer;
         }
     }
@@ -751,7 +708,7 @@ const membersInputFirstName_attributes = {
     required: 'required',
     style: 'margin: 0 3px;'
 };
-setAttributes(membersInputFirstName, membersInputFirstName_attributes)
+setAttributes(membersInputFirstName, membersInputFirstName_attributes);
 let membersInputLastName = document.createElement('input'); // Input LName
 const membersInputLastName_attributes = {
     type: 'text',
@@ -761,7 +718,7 @@ const membersInputLastName_attributes = {
     required: 'required',
     style: 'margin: 0 3px;'
 };
-setAttributes(membersInputLastName, membersInputLastName_attributes)
+setAttributes(membersInputLastName, membersInputLastName_attributes);
 let membersInputEmail = document.createElement('input'); // Input Email
 const membersInputEmail_attributes = {
     type: 'email',
@@ -771,7 +728,7 @@ const membersInputEmail_attributes = {
     required: 'required',
     style: 'margin: 0 3px;'
 };
-setAttributes(membersInputEmail, membersInputEmail_attributes)
+setAttributes(membersInputEmail, membersInputEmail_attributes);
 let membersInputOccupation = document.createElement('input'); // Input Occupation
 const membersInputOccupation_attributes = {
     type: 'text',
@@ -781,31 +738,24 @@ const membersInputOccupation_attributes = {
     required: 'required',
     style: 'margin: 0 3px;'
 };
-setAttributes(membersInputOccupation, membersInputOccupation_attributes)
+setAttributes(membersInputOccupation, membersInputOccupation_attributes);
 let membersSubmitButton = document.createElement('input');  //? Button submit
 const membersSubmitButton_attributes = {
     type: 'button',
     value: 'Créer',
     style: 'margin: 0 3px;'
 };
-setAttributes(membersSubmitButton, membersSubmitButton_attributes)
-let membersSelectTask = document.createElement('select'); // Input select Task
-membersSelectTask.multiple = true;
-const membersSelectTask_attributes = {
-    name: 'membersTasks',
-    style: 'margin: 0 3px;'
-};
-setAttributes(membersSelectTask, membersSelectTask_attributes)
-membersSelectTask_options(membersSelectTask);
+setAttributes(membersSubmitButton, membersSubmitButton_attributes);
 
 // Add elements in form.
-membersCreationForm.append(membersInputFirstName)
-membersCreationForm.append(membersInputLastName)
-membersCreationForm.append(membersInputEmail)
-membersCreationForm.append(membersInputOccupation)
-membersCreationForm.append(membersSelectTask)
-membersCreationForm.append(membersSubmitButton)
+membersCreationForm.append(membersInputFirstName);
+membersCreationForm.append(membersInputLastName);
+membersCreationForm.append(membersInputEmail);
+membersCreationForm.append(membersInputOccupation);
+membersCreationForm.append(membersSubmitButton);
 
+membersPageContainer.append(membersErrorDiv);
+membersPageContainer.append(membersCreationForm);
 
 // Create members Listeners
 membersSubmitButton.addEventListener('click', () => {
@@ -815,16 +765,11 @@ membersSubmitButton.addEventListener('click', () => {
 membersCreationForm.addEventListener('submit', (e) => {
     e.preventDefault();
     let messages = [];
-    // Retreive inputs values
-    let InputFirstNameValue = formSubmitIsValid(messages, membersInputFirstName);
-    let InputLastNameValue = formSubmitIsValid(messages, membersInputLastName);
+    // Retrieve inputs values
+    let inputFirstNameValue = formSubmitIsValid(messages, membersInputFirstName);
+    let inputLastNameValue = formSubmitIsValid(messages, membersInputLastName);
     let membersInputEmailValue = formSubmitIsValid(messages, membersInputEmail);
     let membersInputOccupationValue = formSubmitIsValid(messages, membersInputOccupation);
-    let membersSelectTaskValue = membersSelectTask.selectedOptions
-    let collectionTaskId = []
-    for (let i = 0; i < membersSelectTaskValue.length; i++) {
-        collectionTaskId.push(membersSelectTaskValue[i].value)
-    }
     if (messages.length > 0) {
         membersErrorMessage.innerText = messages.join(', ');
         membersErrorDiv.append(membersErrorMessage);
@@ -835,9 +780,7 @@ membersCreationForm.addEventListener('submit', (e) => {
         membersInputEmail.value = '';
         membersInputOccupation.value = '';
         if (membersErrorDiv.contains(membersErrorMessage)) membersErrorDiv.removeChild(membersErrorMessage);
-        membersSelectTask.selectedOptions = [];
-        // membersSelectTask.options.selectedIndex = 0;
-        let member = new Members(InputFirstNameValue, InputLastNameValue, membersInputEmailValue, membersInputOccupationValue, collectionTaskId);
+        let member = new Members(inputFirstNameValue, inputLastNameValue, membersInputEmailValue, membersInputOccupationValue);
         allMembers.push(member);
         localStorage.setItem('members', JSON.stringify(allMembers));
     }
@@ -852,17 +795,11 @@ window.addEventListener('pathnamechange', () => {
             emptyKanban();
             main.removeChild(kanbanContainer);
         } else if (history.state.lastPage === '/members') {
-            main.removeChild(membersErrorDiv);
-            main.removeChild(membersCreationForm);
-            if (membersCardContainer !== null)
-                main.removeChild(membersCardContainer)
+            main.removeChild(membersPageContainer);
         }
         if (main.contains(taskInfoContainer)) {
             main.removeChild(taskInfoContainer);
         }
-        //main.append(errorDiv);
-        //main.append(taskCreationForm);
-        //cardsContainer = document.getElementById('cards-container');
         main.append(tasksPageContainer);
         cardsContainer = displayStoredTasks();
         taskInfoHandler();
@@ -879,10 +816,7 @@ window.addEventListener('pathnamechange', () => {
         if (history.state.lastPage === '/tasks') {
             main.removeChild(tasksPageContainer);
         } else if (history.state.lastPage === '/members') {
-            main.removeChild(membersErrorDiv);
-            main.removeChild(membersCreationForm);
-            if (membersCardContainer !== null)
-                main.removeChild(membersCardContainer)
+            main.removeChild(membersPageContainer);
         }
         if (main.contains(taskInfoContainer)) {
             main.removeChild(taskInfoContainer);
@@ -898,9 +832,6 @@ window.addEventListener('pathnamechange', () => {
         if (history.state.lastPage === '/tasks') {
             console.log('from /tasks')
             main.removeChild(tasksPageContainer);
-            /*            main.removeChild(taskCreationForm);
-                        if (cardsContainer !== null)
-                            main.removeChild(cardsContainer);*/
         } else if (history.state.lastPage === '/kanban') {
             console.log('from /kanban')
             emptyKanban();
@@ -909,9 +840,7 @@ window.addEventListener('pathnamechange', () => {
         if (main.contains(taskInfoContainer)) {
             main.removeChild(taskInfoContainer);
         }
-        // append elements
-        main.append(membersErrorDiv);
-        main.append(membersCreationForm);
-        displayMembersStoredOnComeInPage();
+        main.append(membersPageContainer);
+        membersCardContainer = displayMembersStored();
     }
 });

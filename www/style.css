@@ -95,3 +95,26 @@ input:valid {
     flex-direction: column;
     align-items: center;
 }
+
+.member-card {
+    background-color: aliceblue;
+    border: 2px solid black;
+    height: 5vh;
+    width: 15vw;
+    display: flex;
+    align-items: center;
+    /*backdrop-filter: blur(5px);*/
+    margin: 2px;
+}
+
+.members-page-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#members-cards-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
