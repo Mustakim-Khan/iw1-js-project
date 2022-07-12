@@ -4,6 +4,7 @@ const kanban = document.getElementById("kanban");
 const task = document.getElementById("task");
 const members = document.getElementById("members");
 const gifElement = document.getElementById('gif');
+const pageName = document.getElementById('page-name');
 // Init task id at 1 if 'nextTaskId' doesn't exist.
 let nextTaskId = (localStorage.getItem('nextTaskId') ? parseInt(localStorage.getItem('nextTaskId')) : 1);
 // Retrieve from local storage 'tasks' item.
@@ -16,6 +17,7 @@ const STATUS_TO_VALIDATE = 'A Valider';
 const STATUS_DONE = 'Fait';
 
 if (location.pathname === '/') {
+    document.title = 'Bienvenue';
     gifElement.style.display = 'block';
 }
 
@@ -899,6 +901,8 @@ window.addEventListener('pathnamechange', () => {
         if (main.contains(taskInfoContainer)) {
             main.removeChild(taskInfoContainer);
         }
+        document.title = 'Tâches';
+        pageName.innerText = 'Tâches';
         fillTaskMembersOptions();
         main.append(tasksPageContainer);
         cardsContainer = displayStoredTasks();
@@ -909,6 +913,8 @@ window.addEventListener('pathnamechange', () => {
         });
         if (main.contains(tasksPageContainer))
             main.removeChild(tasksPageContainer);
+        document.title = 'Détails';
+        pageName.innerText = 'Détails de la tâches';
         main.append(taskInfoContainer);
         fillTaskInfoForm(currentTaskInfo);
         taskInfoFormListener();
@@ -923,6 +929,8 @@ window.addEventListener('pathnamechange', () => {
             main.removeChild(taskInfoContainer);
         }
         if (history.state.lastPage !== location.pathname) {
+            document.title = 'Kanban';
+            pageName.innerText = 'Kanban';
             main.append(kanbanContainer);
             fillKanban();
             draggableListener();
@@ -942,6 +950,9 @@ window.addEventListener('pathnamechange', () => {
         if (main.contains(taskInfoContainer)) {
             main.removeChild(taskInfoContainer);
         }
+        document.title = 'Membres';
+        pageName.innerText = 'Membres';
+        console.log(document.title);
         main.append(membersPageContainer);
         membersCardContainer = displayMembersStored();
     }
