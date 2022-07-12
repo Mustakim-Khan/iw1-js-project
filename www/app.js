@@ -458,8 +458,8 @@ const taskInfoFormListener = () => {
 const fillTaskInfoForm = (currentTask) => {
     console.log(currentTask._title)
     taskInfoTitle.setAttribute('value', '');
-    taskInfoTitle.setAttribute('value', currentTask._title);
-    taskInfoContent.setAttribute('value', currentTask._content);
+    taskInfoTitle.value = currentTask._title;
+    taskInfoContent.value = currentTask._content;
     taskInfoStatus.selectedIndex = 0;
     fillTaskInfoMembersOptions(currentTask);
 }
@@ -903,6 +903,7 @@ window.addEventListener('pathnamechange', () => {
         }
         document.title = 'Tâches';
         pageName.innerText = 'Tâches';
+        emptyTaskMembersOptions();
         fillTaskMembersOptions();
         main.append(tasksPageContainer);
         cardsContainer = displayStoredTasks();
