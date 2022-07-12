@@ -245,8 +245,8 @@ const displayStoredTasksOnComeInPage = () => {
     }
 }
 
-const displayStoredTasksOnAdd = () => {
-    console.log('displayStoredTasksOnAdd')
+const displayStoredTasks = () => {
+    console.log('displayStoredTasks')
     if (allTasks.length > 0) {
         if (!cardsContainer) {
             cardsContainer = document.createElement('div');
@@ -596,7 +596,7 @@ taskCreationForm.addEventListener('submit', (e) => {
         allTasks.push(task);
         localStorage.setItem('tasks', JSON.stringify(allTasks));
     }
-    cardsContainer = displayStoredTasksOnAdd();
+    cardsContainer = displayStoredTasks();
     taskInfoHandler();
 });
 
@@ -875,7 +875,7 @@ window.addEventListener('pathnamechange', () => {
         //main.append(taskCreationForm);
         //cardsContainer = document.getElementById('cards-container');
         main.append(tasksPageContainer);
-        cardsContainer = displayStoredTasksOnAdd();
+        cardsContainer = displayStoredTasks();
         console.log(cardsContainer)
         taskInfoHandler();
     } else if (urlPatternIsValid(location.href)) {
