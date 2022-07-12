@@ -232,10 +232,8 @@ const urlPatternIsValid = (url) => {
 };
 
 const displayStoredTasksOnComeInPage = () => {
-    console.log('displayStoredTasksOnComeInPage')
     if (allTasks.length > 0) {
         if (!cardsContainer) {
-            console.log('cardsContainer')
             cardsContainer = document.createElement('div');
             cardsContainer.setAttribute('id', 'cards-container');
             fillCardsContainer(cardsContainer);
@@ -246,7 +244,6 @@ const displayStoredTasksOnComeInPage = () => {
 }
 
 const displayStoredTasks = () => {
-    console.log('displayStoredTasks')
     if (allTasks.length > 0) {
         if (!cardsContainer) {
             cardsContainer = document.createElement('div');
@@ -258,10 +255,6 @@ const displayStoredTasks = () => {
             let newCardsContainer = document.createElement('div');
             newCardsContainer.setAttribute('id', 'cards-container');
             fillCardsContainer(newCardsContainer);
-            console.log('cardsContainer')
-            console.log(cardsContainer)
-            console.log('tasksPageContainer')
-            console.log(tasksPageContainer)
             tasksPageContainer.replaceChild(newCardsContainer, cardsContainer);
             return newCardsContainer;
         }
@@ -300,9 +293,9 @@ let taskInfoStatus = document.createElement('select');
 let taskInfoContent = document.createElement('input');
 let taskInfoInputButton = document.createElement('input');
 taskInfoTitle.setAttribute('type', 'text');
-taskInfoTitle.setAttribute('name', 'titleInput');
 taskInfoContent.setAttribute('type', 'text');
-taskInfoContent.setAttribute('name', 'titleInput');
+taskInfoContent.setAttribute('required', 'required');
+taskInfoTitle.setAttribute('required', 'required');
 taskInfoInputButton.setAttribute('type', 'button');
 taskInfoInputButton.setAttribute('value', 'Modifier');
 let taskInfoErrorDiv = document.createElement('div');
@@ -343,7 +336,8 @@ taskInfoForm.append(taskInfoTitleLabel);
 taskInfoForm.append(taskInfoContentLabel);
 taskInfoForm.append(taskInfoStatusLabel);
 
-taskInfoForm.append(taskInfoInputButton)
+taskInfoForm.append(taskInfoInputButton);
+taskInfoContainer.append(taskInfoErrorDiv);
 taskInfoContainer.append(taskInfoForm);
 
 taskInfoInputButton.addEventListener('click', () => {
@@ -353,12 +347,10 @@ taskInfoInputButton.addEventListener('click', () => {
 const taskInfoFormListener = () => {
     taskInfoForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        console.log(cardsContainer)
         let messages = [];
         const infoTitle = taskInfoTitle.value;
         const infoContent = taskInfoContent.value;
         const taskStatus = taskInfoStatus.options[taskInfoStatus.selectedIndex].text;
-
         if (infoTitle === '' || infoTitle === null) {
             messages.push('Le titre est requis');
         }
@@ -377,24 +369,22 @@ const taskInfoFormListener = () => {
             currentTaskInfo._status = taskStatus;
             //currentTaskInfo = undefined;
             localStorage.setItem('tasks', JSON.stringify(allTasks));
+            history.pushState(
+                {
+                    lastPage: '/tasks/id',
+                },
+                null,
+                "/tasks"
+            );
+            window.dispatchEvent(new Event('pathnamechange'));
         }
-        history.pushState(
-            {
-                lastPage: '/tasks/id',
-            },
-            null,
-            "/tasks"
-        );
-        window.dispatchEvent(new Event('pathnamechange'));
     });
 }
 
-const fillTaskInfoForm = () => {
-    console.log(currentTaskInfo._title)
-    taskInfoTitle.setAttribute('value', currentTaskInfo._title);
-    taskInfoContent.setAttribute('value', currentTaskInfo._content);
-    taskInfoContent.setAttribute('required', 'required');
-    taskInfoTitle.setAttribute('required', 'required');
+const fillTaskInfoForm = (currentTask) => {
+    taskInfoTitle.setAttribute('value', '');
+    taskInfoTitle.setAttribute('value', currentTask._title);
+    taskInfoContent.setAttribute('value', currentTask._content);
     taskInfoStatus.selectedIndex = 0;
 }
 
@@ -857,7 +847,6 @@ membersCreationForm.addEventListener('submit', (e) => {
 // Path handler
 window.addEventListener('pathnamechange', () => {
     console.log('path handler : pathname : ' + location.pathname);
-    console.log(currentTaskInfo)
     if (location.pathname === '/tasks') {
         if (history.state.lastPage === '/kanban') {
             emptyKanban();
@@ -876,7 +865,6 @@ window.addEventListener('pathnamechange', () => {
         //cardsContainer = document.getElementById('cards-container');
         main.append(tasksPageContainer);
         cardsContainer = displayStoredTasks();
-        console.log(cardsContainer)
         taskInfoHandler();
     } else if (urlPatternIsValid(location.href)) {
         currentTaskInfo = allTasks.find((el) => {
@@ -885,19 +873,19 @@ window.addEventListener('pathnamechange', () => {
         if (main.contains(tasksPageContainer))
             main.removeChild(tasksPageContainer);
         main.append(taskInfoContainer);
-        fillTaskInfoForm();
+        fillTaskInfoForm(currentTaskInfo);
         taskInfoFormListener();
     } else if (location.pathname === '/kanban') {
         if (history.state.lastPage === '/tasks') {
             main.removeChild(tasksPageContainer);
-            /*            main.removeChild(taskCreationForm);
-                        if (cardsContainer !== null)
-                            main.removeChild(cardsContainer);*/
         } else if (history.state.lastPage === '/members') {
             main.removeChild(membersErrorDiv);
             main.removeChild(membersCreationForm);
             if (membersCardContainer !== null)
                 main.removeChild(membersCardContainer)
+        }
+        if (main.contains(taskInfoContainer)) {
+            main.removeChild(taskInfoContainer);
         }
         if (history.state.lastPage !== location.pathname) {
             main.append(kanbanContainer);
@@ -918,11 +906,12 @@ window.addEventListener('pathnamechange', () => {
             emptyKanban();
             main.removeChild(kanbanContainer);
         }
+        if (main.contains(taskInfoContainer)) {
+            main.removeChild(taskInfoContainer);
+        }
         // append elements
         main.append(membersErrorDiv);
         main.append(membersCreationForm);
         displayMembersStoredOnComeInPage();
-        //main.append(membersCardContainer);
-        //console.log(main)
     }
 });
