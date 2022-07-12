@@ -25,6 +25,9 @@ kanban.addEventListener("click", () => {
         "/kanban"
     );
     window.dispatchEvent(new Event('pathnamechange'));
+    task.classList.remove('active');
+    members.classList.remove('active');
+    kanban.classList.add('active');
 });
 
 task.addEventListener("click", () => {
@@ -40,6 +43,9 @@ task.addEventListener("click", () => {
         "/tasks"
     );
     window.dispatchEvent(new Event('pathnamechange'));
+    kanban.classList.remove('active');
+    members.classList.remove('active');
+    task.classList.add('active');
 });
 
 members.addEventListener("click", () => {
@@ -51,6 +57,9 @@ members.addEventListener("click", () => {
         "/members"
     );
     window.dispatchEvent(new Event('pathnamechange'));
+    task.classList.remove('active');
+    kanban.classList.remove('active');
+    members.classList.add('active');
 });
 
 // --- KANBAN ---//
