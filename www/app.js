@@ -157,9 +157,14 @@ class Task {
     }
 }
 
+const emptyTaskMembersOptions = () => {
+    while (taskMembers.options.length > 0) {
+        taskMembers.remove(0);
+    }
+}
+
 const fillTaskMembersOptions = () => {
     console.log('fillTaskMembersOptions');
-    console.log(allMembers);
     if (allMembers.length > 0) {
         allMembers.forEach((member) => {
                 let memberOption = document.createElement('option');
@@ -882,6 +887,9 @@ window.addEventListener('pathnamechange', () => {
     console.log('path handler : pathname : ' + location.pathname);
     gifElement.style.display = 'none';
     if (location.pathname === '/tasks') {
+        if (history.state.lastPage === '/tasks') {
+            emptyTaskMembersOptions();
+        }
         if (history.state.lastPage === '/kanban') {
             emptyKanban();
             main.removeChild(kanbanContainer);
@@ -906,6 +914,7 @@ window.addEventListener('pathnamechange', () => {
         taskInfoFormListener();
     } else if (location.pathname === '/kanban') {
         if (history.state.lastPage === '/tasks') {
+            emptyTaskMembersOptions();
             main.removeChild(tasksPageContainer);
         } else if (history.state.lastPage === '/members') {
             main.removeChild(membersPageContainer);
@@ -923,6 +932,7 @@ window.addEventListener('pathnamechange', () => {
         console.log('/members')
         if (history.state.lastPage === '/tasks') {
             console.log('from /tasks')
+            emptyTaskMembersOptions();
             main.removeChild(tasksPageContainer);
         } else if (history.state.lastPage === '/kanban') {
             console.log('from /kanban')
