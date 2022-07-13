@@ -1,5 +1,5 @@
 body {
-    background: url("images/joanna-kosinska-1_CMoFsPfso-unsplash.jpg") no-repeat center center fixed;
+    background: url("images/milad-fakurian-tac7TY2ItGA-unsplash.jpg") no-repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -26,6 +26,7 @@ button {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    margin-top: 4vh;
 }
 
 .card {
@@ -49,17 +50,44 @@ button {
     margin: auto;
 }
 
-input:invalid {
-    border: 3px solid red;
+input[type=text], input[type=email] {
+    background: transparent;
+    border-color: transparent;
+    outline: none;
+    border-bottom: 1px solid red;
 }
 
+input[type=text]:focus {
+    border-bottom: 3px solid red;
+}
+
+input[type=text]::placeholder {
+    font-size: 0.8rem;
+}
+/*input:invalid {
+    border: 3px solid red;
+}*/
+
 input:valid {
-    border: 3px solid mediumseagreen;
+    /*border: 3px solid mediumseagreen;*/
+    border-bottom: 3px solid mediumseagreen;
+}
+
+input[type=button] {
+    background-color: darkgrey;
+    border: 1px solid black;
+    height: 3vh;
+}
+
+input[type=button]:hover {
+    cursor: pointer;
+    background-color: grey;
 }
 
 .container{
     /*background-color: #ded8d8;*/
-    background-color: hsla(34, 83%, 50%, 0.781);
+    /*background-color: hsla(34, 83%, 50%, 0.781);*/
+    background-color: darkgrey;
     padding: 1rem;
     margin-top: 1rem;
     width: 20vw;
@@ -141,11 +169,11 @@ li {
 }
 
 li:hover:not(.active) {
-    background-color: #111;
+    background-color: slategray;
 }
 
 .active {
-    background-color: #04AA6D;
+    background-color: black;
 }
 
 ul {
@@ -156,7 +184,7 @@ ul {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background-color: #333;
+    background-color: lightslategrey;
     top: 0;
     width: 100%;
     height: 5vh;
