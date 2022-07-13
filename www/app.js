@@ -217,6 +217,16 @@ inputContent.setAttribute('value', '');
 inputContent.setAttribute('placeholder', 'Contenu de la tâche');
 inputContent.setAttribute('required', 'required');
 
+let inputTitleLabel = document.createElement('label');
+let inputContentLabel = document.createElement('label');
+let selectStatusLabel = document.createElement('label');
+let taskMembersLabel = document.createElement('label');
+
+inputTitleLabel.innerText = 'Titre : ';
+inputContentLabel.innerText = 'Contenus : ';
+selectStatusLabel.innerText = 'Status : ';
+taskMembersLabel.innerText = 'Membres : ';
+
 // taskMembers attributes
 taskMembers.multiple = true;
 
@@ -245,10 +255,15 @@ optionDone.value = STATUS_DONE;
 optionDone.text = STATUS_DONE;
 selectStatus.append(optionDone);
 
-taskCreationForm.append(inputTitle);
-taskCreationForm.append(selectStatus);
-taskCreationForm.append(inputContent);
-taskCreationForm.append(taskMembers);
+inputTitleLabel.append(inputTitle);
+inputContentLabel.append(inputContent);
+selectStatusLabel.append(selectStatus);
+taskMembersLabel.append(taskMembers);
+
+taskCreationForm.append(inputTitleLabel);
+taskCreationForm.append(inputContentLabel);
+taskCreationForm.append(selectStatusLabel);
+taskCreationForm.append(taskMembersLabel);
 taskCreationForm.append(inputButton);
 
 tasksPageContainer.append(errorDiv);
@@ -317,7 +332,7 @@ taskInfoContainer.classList.add('tasks-info-container');
 let taskInfoForm = document.createElement('form');
 taskInfoForm.setAttribute('method', 'post');
 taskInfoForm.setAttribute('action', '');
-taskInfoForm.classList.add('tasks-info-container');
+//taskInfoForm.classList.add('tasks-info-container');
 let taskInfoTitle = document.createElement('input');
 let taskInfoStatus = document.createElement('select');
 let taskInfoContent = document.createElement('input');
@@ -415,45 +430,47 @@ taskInfoInputButton.addEventListener('click', () => {
     taskInfoForm.dispatchEvent(new Event('submit'));
 });
 
-const taskInfoFormListener = () => {
-    taskInfoForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        let messages = [];
-        const infoTitle = taskInfoTitle.value;
-        const infoContent = taskInfoContent.value;
-        const taskStatus = taskInfoStatus.options[taskInfoStatus.selectedIndex].text;
-        if (infoTitle === '' || infoTitle === null) {
-            messages.push('Le titre est requis');
+taskInfoForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    let messages = [];
+    const infoTitle = taskInfoTitle.value;
+    const infoContent = taskInfoContent.value;
+    const taskStatus = taskInfoStatus.options[taskInfoStatus.selectedIndex].text;
+    console.log('taskStatus')
+    console.log(taskStatus)
+    if (infoTitle === '' || infoTitle === null) {
+        messages.push('Le titre est requis');
+    }
+    if (infoContent === '' || infoContent === null) {
+        messages.push('Le contenu est requis');
+    }
+    if (messages.length > 0) {
+        taskInfoErrorMessage.innerText = messages.join(', ');
+        taskInfoErrorDiv.append(taskInfoErrorMessage);
+    } else {
+        console.log('SAVE')
+        console.log('taskStatus')
+        console.log(taskStatus)
+        messages.length = 0;
+        if (taskInfoErrorDiv.contains(taskInfoErrorMessage)) taskInfoErrorDiv.removeChild(taskInfoErrorMessage);
+        currentTaskInfo._title = infoTitle;
+        currentTaskInfo._content = infoContent;
+        currentTaskInfo._status = taskStatus;
+        while (taskInfoMembers.options.length > 0) {
+            taskInfoMembers.remove(0);
         }
-        if (infoContent === '' || infoContent === null) {
-            messages.push('Le contenu est requis');
-        }
-        if (messages.length > 0) {
-            taskInfoErrorMessage.innerText = messages.join(', ');
-            taskInfoErrorDiv.append(taskInfoErrorMessage);
-        } else {
-            messages.length = 0;
-            if (taskInfoErrorDiv.contains(taskInfoErrorMessage)) taskInfoErrorDiv.removeChild(taskInfoErrorMessage);
-            taskInfoStatus.options.selectedIndex = 0;
-            currentTaskInfo._title = infoTitle;
-            currentTaskInfo._content = infoContent;
-            currentTaskInfo._status = taskStatus;
-            while (taskInfoMembers.options.length > 0) {
-                taskInfoMembers.remove(0);
-            }
-            //currentTaskInfo = undefined;
-            localStorage.setItem('tasks', JSON.stringify(allTasks));
-            history.pushState(
-                {
-                    lastPage: '/tasks/id',
-                },
-                null,
-                "/tasks"
-            );
-            window.dispatchEvent(new Event('pathnamechange'));
-        }
-    });
-}
+        //currentTaskInfo = undefined;
+        localStorage.setItem('tasks', JSON.stringify(allTasks));
+        history.pushState(
+            {
+                lastPage: '/tasks/id',
+            },
+            null,
+            "/tasks"
+        );
+        window.dispatchEvent(new Event('pathnamechange'));
+    }
+});
 
 const fillTaskInfoForm = (currentTask) => {
     console.log(currentTask._title)
@@ -845,10 +862,31 @@ const membersSubmitButton_attributes = {
 setAttributes(membersSubmitButton, membersSubmitButton_attributes);
 
 // Add elements in form.
-membersCreationForm.append(membersInputFirstName);
+/*membersCreationForm.append(membersInputFirstName);
 membersCreationForm.append(membersInputLastName);
 membersCreationForm.append(membersInputEmail);
 membersCreationForm.append(membersInputOccupation);
+membersCreationForm.append(membersSubmitButton);*/
+
+let membersInputFirstNameLabel= document.createElement('label');
+let membersInputLastNameLabel = document.createElement('label');
+let membersInputEmailLabel = document.createElement('label');
+let membersInputOccupationLabel = document.createElement('label');
+
+membersInputFirstNameLabel.innerText = membersInputFirstName_attributes.placeholder;
+membersInputLastNameLabel.innerText = membersInputLastName_attributes.placeholder;
+membersInputEmailLabel.innerText = membersInputEmail_attributes.placeholder;
+membersInputOccupationLabel.innerText = membersInputOccupation_attributes.placeholder;
+
+membersInputFirstNameLabel.append(membersInputFirstName);
+membersInputLastNameLabel.append(membersInputLastName);
+membersInputEmailLabel.append(membersInputEmail);
+membersInputOccupationLabel.append(membersInputOccupation);
+
+membersCreationForm.append(membersInputFirstNameLabel);
+membersCreationForm.append(membersInputLastNameLabel);
+membersCreationForm.append(membersInputEmailLabel);
+membersCreationForm.append(membersInputOccupationLabel);
 membersCreationForm.append(membersSubmitButton);
 
 membersPageContainer.append(membersErrorDiv);
@@ -918,7 +956,6 @@ window.addEventListener('pathnamechange', () => {
         pageName.innerText = 'Détails de la tâches';
         main.append(taskInfoContainer);
         fillTaskInfoForm(currentTaskInfo);
-        taskInfoFormListener();
     } else if (location.pathname === '/kanban') {
         if (history.state.lastPage === '/tasks') {
             emptyTaskMembersOptions();
