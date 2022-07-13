@@ -166,7 +166,6 @@ const emptyTaskMembersOptions = () => {
 }
 
 const fillTaskMembersOptions = () => {
-    console.log('fillTaskMembersOptions');
     if (allMembers.length > 0) {
         allMembers.forEach((member) => {
                 let memberOption = document.createElement('option');
@@ -413,7 +412,6 @@ ${ (copyTaskMembers.length === 0) ? 'Pas de membres associés' : `Members : ${ c
         })
 });
 const fillTaskInfoMembersOptions = (task) => {
-    console.log(task._members)
     if (task._members.length > 0) {
         task._members.forEach((member) => {
             let memberOption = document.createElement('option');
@@ -434,8 +432,6 @@ taskInfoForm.addEventListener('submit', (e) => {
     const infoTitle = taskInfoTitle.value;
     const infoContent = taskInfoContent.value;
     const taskStatus = taskInfoStatus.options[taskInfoStatus.selectedIndex].text;
-    console.log('taskStatus')
-    console.log(taskStatus)
     if (infoTitle === '' || infoTitle === null) {
         messages.push('Le titre est requis');
     }
@@ -446,9 +442,6 @@ taskInfoForm.addEventListener('submit', (e) => {
         taskInfoErrorMessage.innerText = messages.join(', ');
         taskInfoErrorDiv.append(taskInfoErrorMessage);
     } else {
-        console.log('SAVE')
-        console.log('taskStatus')
-        console.log(taskStatus)
         messages.length = 0;
         if (taskInfoErrorDiv.contains(taskInfoErrorMessage)) taskInfoErrorDiv.removeChild(taskInfoErrorMessage);
         currentTaskInfo._title = infoTitle;
@@ -471,7 +464,6 @@ taskInfoForm.addEventListener('submit', (e) => {
 });
 
 const fillTaskInfoForm = (currentTask) => {
-    console.log(currentTask._title)
     taskInfoTitle.setAttribute('value', '');
     taskInfoTitle.value = currentTask._title;
     taskInfoContent.value = currentTask._content;
@@ -803,7 +795,6 @@ const displayMembersStored = () => {
             let newMembersCardContainer = document.createElement('div');
             newMembersCardContainer.setAttribute('id', 'members-cards-container');
             fillMembersCardsContainer(newMembersCardContainer);
-            console.log(membersCardContainer)
             membersPageContainer.replaceChild(newMembersCardContainer, membersCardContainer);
             return newMembersCardContainer;
         }
@@ -916,7 +907,6 @@ membersCreationForm.addEventListener('submit', (e) => {
 
 // Path handler
 window.addEventListener('pathnamechange', () => {
-    console.log('path handler : pathname : ' + location.pathname);
     gifElement.style.display = 'none';
     if (location.pathname === '/tasks') {
         if (history.state.lastPage === '/tasks') {
@@ -967,13 +957,10 @@ window.addEventListener('pathnamechange', () => {
             containersListener();
         }
     } else if (location.pathname === '/members') {
-        console.log('/members')
         if (history.state.lastPage === '/tasks') {
-            console.log('from /tasks')
             emptyTaskMembersOptions();
             main.removeChild(tasksPageContainer);
         } else if (history.state.lastPage === '/kanban') {
-            console.log('from /kanban')
             emptyKanban();
             main.removeChild(kanbanContainer);
         }
@@ -982,7 +969,6 @@ window.addEventListener('pathnamechange', () => {
         }
         document.title = 'Membres';
         pageName.innerText = 'Membres';
-        console.log(document.title);
         main.append(membersPageContainer);
         membersCardContainer = displayMembersStored();
     }
