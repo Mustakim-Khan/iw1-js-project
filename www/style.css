@@ -1,0 +1,204 @@
+body {
+    background: url("images/milad-fakurian-tac7TY2ItGA-unsplash.jpg") no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+button {
+    color: red;
+}
+
+#main {
+    width: auto;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+#cards-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 4vh;
+}
+
+.card {
+    background-color: aliceblue;
+    border: 2px solid black;
+    /*height: 5vh;*/
+    width: 15vw;
+    display: flex;
+    align-items: center;
+    /*backdrop-filter: blur(5px);*/
+    word-break: break-all;
+    padding: 1rem;
+    margin: 0.2rem;
+}
+
+.card:hover {
+    cursor: pointer;
+ }
+
+.card-title {
+    margin: auto;
+}
+
+input[type=text], input[type=email] {
+    background: transparent;
+    border-color: transparent;
+    outline: none;
+    border-bottom: 1px solid red;
+}
+
+input[type=text]:focus {
+    border-bottom: 3px solid red;
+}
+
+input[type=text]::placeholder {
+    font-size: 0.8rem;
+}
+/*input:invalid {
+    border: 3px solid red;
+}*/
+
+input:valid {
+    /*border: 3px solid mediumseagreen;*/
+    border-bottom: 3px solid mediumseagreen;
+}
+
+input[type=button] {
+    background-color: darkgrey;
+    border: 1px solid black;
+    height: 3vh;
+}
+
+input[type=button]:hover {
+    cursor: pointer;
+    background-color: grey;
+}
+
+.container{
+    /*background-color: #ded8d8;*/
+    /*background-color: hsla(34, 83%, 50%, 0.781);*/
+    background-color: darkgrey;
+    padding: 1rem;
+    margin-top: 1rem;
+    width: 20vw;
+    border: 1px solid black;
+    text-align: center;
+    height: fit-content;
+}
+
+.draggable{
+    padding: 1rem;
+    background-color: aliceblue;
+    border: 1px solid black;
+    cursor: move;
+    margin-top: 0.5rem;
+    overflow-wrap: break-word;
+}
+
+.draggable.dragging {
+    opacity: 0.5;
+}
+
+.kanban-container{
+    width: 80vw;
+    max-height: fit-content;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.container-title {
+    border-bottom: 2px solid black;
+}
+
+.tasks-info-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.tasks-page-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.member-card {
+    background-color: aliceblue;
+    border: 2px solid black;
+    /*height: 5vh;*/
+    width: 15vw;
+    display: flex;
+    align-items: center;
+    /*backdrop-filter: blur(5px);*/
+    margin: 2px;
+    padding: 1rem;
+    word-break: break-all;
+}
+
+.members-page-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#members-cards-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 4vh;
+}
+
+li {
+    cursor: pointer;
+    color: white;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 33.33%;
+    padding: 1% 0;
+    font-size: 1.5rem;
+    text-align: center;
+}
+
+li:hover:not(.active) {
+    background-color: slategray;
+}
+
+.active {
+    background-color: black;
+}
+
+ul {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: lightslategrey;
+    top: 0;
+    width: 100%;
+    height: 5vh;
+    align-items: center;
+}
+
+div form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    display: flex;
+    flex-direction: column;
+    padding: 0.3rem;
+}
