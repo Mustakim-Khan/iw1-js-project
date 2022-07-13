@@ -326,7 +326,6 @@ const taskInfoHandler = () => {
 // Task INFO => variables
 let taskInfoContainer = document.createElement('div');
 taskInfoContainer.classList.add('tasks-info-container');
-//taskInfoContainer.setAttribute('id', 'taskInfoContainer');
 
 
 let taskInfoForm = document.createElement('form');
@@ -396,7 +395,6 @@ taskInfoContainer.append(taskInfoErrorDiv);
 taskInfoContainer.append(taskInfoForm);
 
 taskInfoCopyButton.addEventListener('click', () => {
-    //let task = new Task(currentTaskInfo._status, currentTaskInfo._title, currentTaskInfo._content, currentTaskInfo._members);
     let copyTaskMembers = [];
     currentTaskInfo._members.forEach((member) => {
         copyTaskMembers.push(member._fname + ' ' + member._lname);
@@ -862,12 +860,6 @@ const membersSubmitButton_attributes = {
 setAttributes(membersSubmitButton, membersSubmitButton_attributes);
 
 // Add elements in form.
-/*membersCreationForm.append(membersInputFirstName);
-membersCreationForm.append(membersInputLastName);
-membersCreationForm.append(membersInputEmail);
-membersCreationForm.append(membersInputOccupation);
-membersCreationForm.append(membersSubmitButton);*/
-
 let membersInputFirstNameLabel= document.createElement('label');
 let membersInputLastNameLabel = document.createElement('label');
 let membersInputEmailLabel = document.createElement('label');
